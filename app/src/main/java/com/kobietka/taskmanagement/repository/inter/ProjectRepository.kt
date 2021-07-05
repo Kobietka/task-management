@@ -12,4 +12,5 @@ interface ProjectRepository {
     fun getAll(): Observable<List<ProjectEntity>>
     fun deleteById(id: Int): Completable
     fun getById(id: Int): Maybe<ProjectEntity>
+    fun getNumberOfTasksInProject(id: Int): Maybe<Int>
 }

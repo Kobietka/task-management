@@ -29,4 +29,8 @@ class ProjectRepositoryImpl
         return projectDao.getById(id)
     }
 
+    override fun getNumberOfTasksInProject(id: Int): Maybe<Int> {
+        return projectDao.getNumberOfTasksInProject(id)
+    }
+
 }

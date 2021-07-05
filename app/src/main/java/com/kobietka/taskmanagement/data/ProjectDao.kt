@@ -21,6 +21,9 @@ interface ProjectDao {
     @Query("select * from project where id = :id")
     fun getById(id: Int): Maybe<ProjectEntity>
 
+    @Query("select count(*) from task where projectId = :id")
+    fun getNumberOfTasksInProject(id: Int): Maybe<Int>
+    
     @Query("delete from project where id = :id")
     fun deleteById(id: Int): Completable
 
