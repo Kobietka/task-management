@@ -1,9 +1,13 @@
 package com.kobietka.taskmanagement.viewmodel
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import com.kobietka.taskmanagement.data.ProjectEntity
+import com.kobietka.taskmanagement.data.TaskEntity
 import com.kobietka.taskmanagement.repository.inter.ProjectRepository
+import com.kobietka.taskmanagement.repository.inter.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -12,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProjectsViewModel
-@Inject constructor(private val projectRepository: ProjectRepository): ViewModel() {
+@Inject constructor(private val projectRepository: ProjectRepository,
+                    private val taskRepository: TaskRepository): ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -22,6 +27,23 @@ class ProjectsViewModel
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(onFinish)
+        )
+    }
+
+    @SuppressLint("CheckResult")
+    fun loadProject(id: Int, onFinish: (ProjectEntity, List<TaskEntity>) -> Unit){
+        compositeDisposable.add(
+            projectRepository.getById(id)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe { project ->
+                    taskRepository.getAllByProjectId(project.id!!)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe { tasks ->
+                            onFinish(project, tasks)
+                        }
+                }
         )
     }
 
