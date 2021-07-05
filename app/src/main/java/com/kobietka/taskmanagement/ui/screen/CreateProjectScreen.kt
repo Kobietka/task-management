@@ -92,28 +92,4 @@ fun CreateProjectScreen(projectsViewModel: ProjectsViewModel, navController: Nav
         }
 
     }
-
-    /*Column(modifier = Modifier.padding(20.dp)) {
-
-        NormalTextField(
-            state = name,
-            errorState = nameError,
-            enabledState = mutableStateOf(true),
-            fieldName = "Project name",
-            errorMessage = "Please fill this field",
-            focusRequester = focusRequester
-        )
-        NormalTextField(
-            state = description,
-            errorState = descriptionError,
-            enabledState = mutableStateOf(true),
-            fieldName = "Project description",
-            errorMessage = "Please fill this field",
-            focusRequester = focusRequester
-        )
-
-        Button(onClick = { }) {
-
-        }
-    }*/
 }

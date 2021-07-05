@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -12,11 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
 import com.kobietka.taskmanagement.ui.screen.CreateProjectScreen
 import com.kobietka.taskmanagement.ui.screen.MainScreen
+import com.kobietka.taskmanagement.ui.screen.ProjectDetailsScreen
 import com.kobietka.taskmanagement.ui.theme.TaskManagementTheme
 import com.kobietka.taskmanagement.ui.util.Route
 import com.kobietka.taskmanagement.viewmodel.MainViewModel
@@ -29,6 +33,7 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private val projectsViewModel: ProjectsViewModel by viewModels()
 
+    @ExperimentalFoundationApi
     @ExperimentalComposeUiApi
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +51,13 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Route.createProject){
                             CreateProjectScreen(projectsViewModel, navController)
+                        }
+                        composable(Route.projectDetails, arguments = listOf(navArgument("id") { type = NavType.IntType })){
+                            ProjectDetailsScreen(
+                                projectId = it.arguments?.getInt("id", -1)!!,
+                                projectsViewModel = projectsViewModel,
+                                navController = navController
+                            )
                         }
                     }
                 }
