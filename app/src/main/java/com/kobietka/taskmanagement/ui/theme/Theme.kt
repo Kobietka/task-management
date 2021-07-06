@@ -27,12 +27,19 @@ private val LightColorPalette = lightColors(
     */
 )
 
+private val taskPalette = lightColors(
+    primary = indigo,
+    primaryVariant = Teal200,
+    secondary = orange
+)
+
 @Composable
 fun TaskManagementTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {
-        LightColorPalette
+        //LightColorPalette
+        taskPalette
     }
 
     MaterialTheme(
