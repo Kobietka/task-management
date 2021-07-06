@@ -68,6 +68,49 @@ fun NormalTextField(state: MutableState<TextFieldValue>, errorState: MutableStat
 
 @ExperimentalComposeUiApi
 @Composable
+fun MultiLineTextField(state: MutableState<TextFieldValue>, errorState: MutableState<Boolean>, enabledState: MutableState<Boolean>, fieldName: String, errorMessage: String, lines: Int, focusRequester: FocusRequester){
+    val keyboardController = LocalSoftwareKeyboardController.current
+    TextField(
+        value = state.value,
+        onValueChange = {
+            state.value = it
+            errorState.value = state.value.text.isBlank()
+        },
+        enabled = enabledState.value,
+        isError = errorState.value,
+        label = {
+            if(errorState.value) Text(errorMessage)
+            else Text(fieldName)
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 15.dp)
+            .focusRequester(focusRequester)
+            .clickable { focusRequester.requestFocus() },
+        maxLines = lines,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Done
+        ),
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = Color.White,
+            disabledTextColor = Color.Black,
+            focusedIndicatorColor = Color.Gray,
+            focusedLabelColor = Color.Gray,
+            cursorColor = Color.Gray,
+            errorIndicatorColor = Color.Red,
+            errorCursorColor = Color.Red,
+            errorLabelColor = Color.Red
+        ),
+        keyboardActions = KeyboardActions(
+            onNext = { focusRequester.requestFocus() },
+            onDone = { keyboardController!!.hide() }
+        )
+    )
+}
+
+@ExperimentalComposeUiApi
+@Composable
 fun NicknameTextField(state: MutableState<TextFieldValue>, errorState: MutableState<Boolean>, focusRequester: FocusRequester){
     val keyboardController = LocalSoftwareKeyboardController.current
     TextField(

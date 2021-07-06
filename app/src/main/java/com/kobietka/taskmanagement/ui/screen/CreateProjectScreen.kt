@@ -18,6 +18,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.kobietka.taskmanagement.ui.util.MultiLineTextField
 import com.kobietka.taskmanagement.ui.util.NormalTextField
 import com.kobietka.taskmanagement.ui.util.Route
 import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
@@ -62,12 +63,14 @@ fun CreateProjectScreen(projectsViewModel: ProjectsViewModel, navController: Nav
                     errorMessage = "Please fill this field",
                     focusRequester = focusRequester
                 )
-                NormalTextField(
+
+                MultiLineTextField(
                     state = description,
                     errorState = descriptionError,
                     enabledState = mutableStateOf(true),
                     fieldName = "Project description",
                     errorMessage = "Please fill this field",
+                    lines = 10,
                     focusRequester = focusRequester
                 )
 
@@ -82,7 +85,7 @@ fun CreateProjectScreen(projectsViewModel: ProjectsViewModel, navController: Nav
                         onFinish = { navController.navigate(Route.main) }
                     ) },
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.Yellow
+                        backgroundColor = MaterialTheme.colors.secondary
                     ))
                 {
                     Text(text = "Create", fontWeight = FontWeight.Bold, fontSize = 15.sp)
