@@ -6,6 +6,7 @@ import androidx.room.RoomDatabase
 import com.kobietka.taskmanagement.data.Database
 import com.kobietka.taskmanagement.data.ProjectDao
 import com.kobietka.taskmanagement.data.TaskDao
+import com.kobietka.taskmanagement.data.TaskStatusDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,6 +37,11 @@ class DatabaseModule {
     @Provides
     fun provideProjectDao(database: Database): ProjectDao {
         return database.projectDao()
+    }
+
+    @Provides
+    fun provideTaskStatusDao(database: Database): TaskStatusDao {
+        return database.taskStatusDao()
     }
 
 }
