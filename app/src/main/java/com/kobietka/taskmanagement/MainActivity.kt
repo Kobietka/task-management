@@ -12,6 +12,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -22,6 +24,7 @@ import com.kobietka.taskmanagement.ui.screen.CreateProjectScreen
 import com.kobietka.taskmanagement.ui.screen.MainScreen
 import com.kobietka.taskmanagement.ui.screen.ProjectDetailsScreen
 import com.kobietka.taskmanagement.ui.theme.TaskManagementTheme
+import com.kobietka.taskmanagement.ui.theme.orange
 import com.kobietka.taskmanagement.ui.util.Route
 import com.kobietka.taskmanagement.viewmodel.MainViewModel
 import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
@@ -44,21 +47,21 @@ class MainActivity : ComponentActivity() {
             val projects = mainViewModel.projects().observeAsState(listOf())
             val navController = rememberNavController()
             TaskManagementTheme {
-                Surface(color = MaterialTheme.colors.background) {
-                    NavHost(navController = navController, startDestination = Route.main) {
-                        composable(Route.main){
-                            MainScreen(projects, navController)
-                        }
-                        composable(Route.createProject){
-                            CreateProjectScreen(projectsViewModel, navController)
-                        }
-                        composable(Route.projectDetails, arguments = listOf(navArgument("id") { type = NavType.IntType })){
-                            ProjectDetailsScreen(
-                                projectId = it.arguments?.getInt("id", -1)!!,
-                                projectsViewModel = projectsViewModel,
-                                navController = navController
-                            )
-                        }
+                NavHost(navController = navController, startDestination = Route.main) {
+                    composable(Route.main){
+                        window.statusBarColor = MaterialTheme.colors.primary.toArgb()
+                        MainScreen(projects, navController)
+                    }
+                    composable(Route.createProject){
+                        window.statusBarColor = Color.White.toArgb()
+                        CreateProjectScreen(projectsViewModel, navController)
+                    }
+                    composable(Route.projectDetails, arguments = listOf(navArgument("id") { type = NavType.IntType })){
+                        ProjectDetailsScreen(
+                            projectId = it.arguments?.getInt("id", -1)!!,
+                            projectsViewModel = projectsViewModel,
+                            navController = navController
+                        )
                     }
                 }
             }
