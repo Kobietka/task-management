@@ -3,15 +3,13 @@ package com.kobietka.taskmanagement.di
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.kobietka.taskmanagement.data.Database
-import com.kobietka.taskmanagement.data.ProjectDao
-import com.kobietka.taskmanagement.data.TaskDao
-import com.kobietka.taskmanagement.data.TaskStatusDao
+import com.kobietka.taskmanagement.data.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Singleton
 
 
@@ -22,11 +20,23 @@ class DatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): Database {
-        return Room.databaseBuilder(
+        val database = Room.databaseBuilder(
             context,
             Database::class.java,
             "app_database"
         ).fallbackToDestructiveMigration().build()
+
+        database.taskStatusDao().insert(TaskStatusEntity(1, "Not started"))
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+        database.taskStatusDao().insert(TaskStatusEntity(2, "In progress"))
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+        database.taskStatusDao().insert(TaskStatusEntity(3, "Completed"))
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+
+        return database
     }
 
     @Provides

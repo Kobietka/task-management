@@ -2,7 +2,9 @@ package com.kobietka.taskmanagement.data
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.google.android.material.circularreveal.CircularRevealHelper
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -11,7 +13,7 @@ import io.reactivex.Observable
 @Dao
 interface TaskStatusDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(taskStatusEntity: TaskStatusEntity): Completable
 
     @Query("select * from taskStatus where id = :id")
