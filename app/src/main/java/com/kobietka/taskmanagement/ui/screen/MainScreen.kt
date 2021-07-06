@@ -43,7 +43,7 @@ fun MainScreen(projects: State<List<ProjectData>>, navController: NavController)
         backgroundColor = MaterialTheme.colors.primary,
         floatingActionButton = {
             FloatingActionButton(backgroundColor = MaterialTheme.colors.primary, onClick = { navController.navigate(Route.createProject) }) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "add project")
+                Icon(imageVector = Icons.Filled.Add, contentDescription = "add project", tint = Color.Black)
             }
         },
         topBar = {
