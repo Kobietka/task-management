@@ -28,7 +28,7 @@ import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
 @Composable
 fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, navController: NavController){
     val name = remember { mutableStateOf("") }
-    val descriptionVisible = remember { mutableStateOf(true) }
+    val descriptionVisible = remember { mutableStateOf(false) }
     val description = remember { mutableStateOf("") }
     val tasks = remember { mutableStateOf(listOf<TaskEntity>()) }
     val firstTime = remember { mutableStateOf(true) }
@@ -55,7 +55,12 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
         topBar = {
             Column(Modifier.padding(20.dp)) {
                 Text(text = "Welcome to", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.Black)
-                Text(text = name.value, fontSize = 20.sp, color = Color.Black, fontWeight = FontWeight.Bold)
+                AnimatedVisibility(visible = name.value != "") {
+                    Text(modifier = Modifier.clickable { descriptionVisible.value = !descriptionVisible.value }, text = name.value, fontSize = 20.sp, color = Color.Black, fontWeight = FontWeight.Bold)
+                }
+                AnimatedVisibility(visible = descriptionVisible.value) {
+                    Text(modifier = Modifier.padding(top = 5.dp), text = description.value, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                }
             }
         },
         content = {
@@ -95,18 +100,22 @@ fun Task(taskEntity: TaskEntity, projectsViewModel: ProjectsViewModel, navContro
     }
 
     Card(shape = RoundedCornerShape(10.dp)) {
-        Column(modifier = Modifier.padding(20.dp).fillMaxWidth()) {
+        Column(modifier = Modifier
+            .padding(20.dp)
+            .fillMaxWidth()) {
             Text(modifier = Modifier.padding(bottom = 10.dp), text = taskEntity.name, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             AnimatedVisibility(visible = status.value != "") {
                 Column(
-                    modifier = Modifier.clip(RoundedCornerShape(5.dp)).background(
-                        when(status.value){
-                            "Not started" -> statusRed()
-                            "In progress" -> statusBlue()
-                            "Completed" -> statusGreen()
-                            else -> Color.Black
-                        }
-                    )
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(5.dp))
+                        .background(
+                            when (status.value) {
+                                "Not started" -> statusRed()
+                                "In progress" -> statusBlue()
+                                "Completed" -> statusGreen()
+                                else -> Color.Black
+                            }
+                        )
                 ) {
                     Text(
                         modifier = Modifier.padding(
