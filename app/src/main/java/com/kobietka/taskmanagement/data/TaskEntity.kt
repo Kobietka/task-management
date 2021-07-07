@@ -10,5 +10,6 @@ data class TaskEntity(
     @ColumnInfo val projectId: Int,
     @ColumnInfo val name: String,
     @ColumnInfo val description: String,
-    @ColumnInfo val creationDate: String
+    @ColumnInfo val creationDate: String,
+    @ColumnInfo val statusId: Int
 )
