@@ -79,11 +79,21 @@ fun CreateProjectScreen(projectsViewModel: ProjectsViewModel, navController: Nav
                         .fillMaxWidth()
                         .height(60.dp)
                         .padding(top = 10.dp),
-                    onClick = { projectsViewModel.insertProject(
-                        name = name.value.text,
-                        description = description.value.text,
-                        onFinish = { navController.navigate(Route.main) }
-                    ) },
+                    onClick = {
+                        if(!nameError.value && !descriptionError.value){
+                            projectsViewModel.insertProject(
+                                name = name.value.text,
+                                description = description.value.text,
+                                onFinish = {
+                                    navController.navigate(Route.main){
+                                        popUpTo(Route.createProject){
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = MaterialTheme.colors.secondary
                     ))
