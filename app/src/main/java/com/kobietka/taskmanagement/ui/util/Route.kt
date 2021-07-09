@@ -8,6 +8,7 @@ class Route {
         const val createProject = "create_project"
         const val projectDetails = "project/{id}"
         const val createTask = "create_task/{id}"
+        const val taskDetails = "task/{id}"
 
         fun projectDetailsRoute(id: Int): String {
             return "project/$id"
@@ -15,6 +16,10 @@ class Route {
 
         fun createTaskRoute(projectId: Int): String {
             return "create_task/$projectId"
+        }
+
+        fun taskDetailsRoute(taskId: Int): String {
+            return "task/$taskId"
         }
     }
 }
