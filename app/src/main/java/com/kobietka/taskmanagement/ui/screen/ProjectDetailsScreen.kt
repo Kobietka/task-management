@@ -102,7 +102,7 @@ fun Task(taskEntity: TaskEntity, projectsViewModel: ProjectsViewModel, navContro
         )
     }
 
-    Card(shape = RoundedCornerShape(10.dp), modifier = Modifier.padding(bottom = 10.dp)) {
+    Card(shape = RoundedCornerShape(10.dp), modifier = Modifier.padding(bottom = 10.dp).clickable { navController.navigate(Route.taskDetailsRoute(taskEntity.id!!)) }) {
         Column(modifier = Modifier
             .padding(20.dp)
             .fillMaxWidth()) {
