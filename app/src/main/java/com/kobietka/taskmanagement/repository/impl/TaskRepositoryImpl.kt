@@ -4,6 +4,7 @@ import com.kobietka.taskmanagement.data.TaskDao
 import com.kobietka.taskmanagement.data.TaskEntity
 import com.kobietka.taskmanagement.repository.inter.TaskRepository
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import javax.inject.Inject
 
@@ -21,6 +22,10 @@ class TaskRepositoryImpl
 
     override fun deleteById(id: Int): Completable {
         return taskDao.deleteById(id)
+    }
+
+    override fun getById(id: Int): Maybe<TaskEntity> {
+        return taskDao.getById(id)
     }
 
 }
