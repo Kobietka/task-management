@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kobietka.taskmanagement.data.TaskEntity
+import com.kobietka.taskmanagement.ui.util.Route
 import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
 
 
@@ -48,7 +49,9 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
     Scaffold(
         backgroundColor = MaterialTheme.colors.primary,
         floatingActionButton = {
-            FloatingActionButton(backgroundColor = MaterialTheme.colors.primary, onClick = { }) {
+            FloatingActionButton(
+                backgroundColor = MaterialTheme.colors.primary,
+                onClick = { navController.navigate(Route.createTaskRoute(projectId)) }) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "add task", tint = Color.Black)
             }
         },
@@ -99,7 +102,7 @@ fun Task(taskEntity: TaskEntity, projectsViewModel: ProjectsViewModel, navContro
         )
     }
 
-    Card(shape = RoundedCornerShape(10.dp)) {
+    Card(shape = RoundedCornerShape(10.dp), modifier = Modifier.padding(bottom = 10.dp)) {
         Column(modifier = Modifier
             .padding(20.dp)
             .fillMaxWidth()) {
