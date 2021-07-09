@@ -40,6 +40,25 @@ class TasksViewModel
         )
     }
 
+    fun insertTask(taskEntity: TaskEntity, onFinish: () -> Unit){
+        compositeDisposable.add(
+            taskRepository.insert(
+                taskEntity = taskEntity
+            ).observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(onFinish)
+        )
+    }
+
+    fun loadTask(taskId: Int, onFinish: (TaskEntity) -> Unit){
+        compositeDisposable.add(
+            taskRepository.getById(taskId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(onFinish)
+        )
+    }
+
     fun loadTaskStatuses(onFinish: (List<TaskStatusEntity>) -> Unit){
         compositeDisposable.add(
             taskStatusRepository.getAll()
