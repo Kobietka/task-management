@@ -7,9 +7,14 @@ class Route {
         const val main = "main"
         const val createProject = "create_project"
         const val projectDetails = "project/{id}"
+        const val createTask = "create_task/{id}"
 
         fun projectDetailsRoute(id: Int): String {
             return "project/$id"
+        }
+
+        fun createTaskRoute(projectId: Int): String {
+            return "create_task/$projectId"
         }
     }
 }
