@@ -20,10 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
-import com.kobietka.taskmanagement.ui.screen.CreateProjectScreen
-import com.kobietka.taskmanagement.ui.screen.CreateTaskScreen
-import com.kobietka.taskmanagement.ui.screen.MainScreen
-import com.kobietka.taskmanagement.ui.screen.ProjectDetailsScreen
+import com.kobietka.taskmanagement.ui.screen.*
 import com.kobietka.taskmanagement.ui.theme.TaskManagementTheme
 import com.kobietka.taskmanagement.ui.theme.orange
 import com.kobietka.taskmanagement.ui.util.Route
@@ -69,6 +66,13 @@ class MainActivity : ComponentActivity() {
                     composable(Route.createTask, arguments = listOf(navArgument("id") { type = NavType.IntType })){
                         CreateTaskScreen(
                             projectId = it.arguments?.getInt("id", -1)!!,
+                            tasksViewModel = tasksViewModel,
+                            navController = navController
+                        )
+                    }
+                    composable(Route.taskDetails, arguments = listOf(navArgument("id") { type = NavType.IntType })){
+                        TaskDetailsScreen(
+                            taskId = it.arguments?.getInt("id", -1)!!,
                             tasksViewModel = tasksViewModel,
                             navController = navController
                         )
