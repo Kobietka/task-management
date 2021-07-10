@@ -25,6 +25,11 @@ class MainViewModel
         return _projects
     }
 
+    fun clearProjects(){
+        _projects.value = listOf()
+        loadData()
+    }
+
     @SuppressLint("CheckResult")
     fun loadData(){
         val projectsData = mutableListOf<ProjectData>()
