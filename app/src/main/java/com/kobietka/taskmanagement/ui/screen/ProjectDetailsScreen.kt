@@ -35,7 +35,7 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
     val firstTime = remember { mutableStateOf(true) }
 
     if(firstTime.value){
-        projectsViewModel.loadProject(
+        projectsViewModel.loadProjectWithTasks(
             id = projectId,
             onFinish = { project, projectTasks ->
                 name.value = project.name

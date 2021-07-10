@@ -33,8 +33,17 @@ class ProjectsViewModel
         )
     }
 
+    fun insertProject(projectEntity: ProjectEntity, onFinish: () -> Unit){
+        compositeDisposable.add(
+            projectRepository.insert(projectEntity)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(onFinish)
+        )
+    }
+
     @SuppressLint("CheckResult")
-    fun loadProject(id: Int, onFinish: (ProjectEntity, List<TaskEntity>) -> Unit){
+    fun loadProjectWithTasks(id: Int, onFinish: (ProjectEntity, List<TaskEntity>) -> Unit){
         compositeDisposable.add(
             projectRepository.getById(id)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -47,6 +56,15 @@ class ProjectsViewModel
                             onFinish(project, tasks)
                         }
                 }
+        )
+    }
+
+    fun loadProject(id: Int, onFinish: (ProjectEntity) -> Unit){
+        compositeDisposable.add(
+            projectRepository.getById(id)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(onFinish)
         )
     }
 
