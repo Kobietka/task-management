@@ -49,6 +49,7 @@ class MainActivity : ComponentActivity() {
             TaskManagementTheme {
                 NavHost(navController = navController, startDestination = Route.main) {
                     composable(Route.main){
+                        mainViewModel.clearProjects()
                         window.statusBarColor = MaterialTheme.colors.primary.toArgb()
                         MainScreen(projects, navController)
                     }
@@ -74,6 +75,13 @@ class MainActivity : ComponentActivity() {
                         TaskDetailsScreen(
                             taskId = it.arguments?.getInt("id", -1)!!,
                             tasksViewModel = tasksViewModel,
+                            navController = navController
+                        )
+                    }
+                    composable(Route.editProject, arguments = listOf(navArgument("id") { type = NavType.IntType })){
+                        EditProjectScreen(
+                            projectId = it.arguments?.getInt("id", -1)!!,
+                            projectsViewModel = projectsViewModel,
                             navController = navController
                         )
                     }
