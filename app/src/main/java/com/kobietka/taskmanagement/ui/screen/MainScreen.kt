@@ -75,7 +75,6 @@ fun MainScreen(projects: State<List<ProjectData>>, navController: NavController)
 @ExperimentalAnimationApi
 @Composable
 fun Project(projectData: ProjectData, navController: NavController){
-    val expanded = remember { mutableStateOf(false) }
     Card(
         elevation = 4.dp,
         shape = RoundedCornerShape(10.dp),
@@ -86,7 +85,7 @@ fun Project(projectData: ProjectData, navController: NavController){
             interactionSource = remember { MutableInteractionSource() },
             indication = null,
             onClick = { navController.navigate(Route.projectDetailsRoute(projectData.projectEntity.id!!)) },
-            onLongClick = { expanded.value = !expanded.value }
+            onLongClick = { navController.navigate(Route.editProjectRoute(projectData.projectEntity.id!!)) }
         )){
 
         Row(modifier = Modifier.padding(20.dp)){
