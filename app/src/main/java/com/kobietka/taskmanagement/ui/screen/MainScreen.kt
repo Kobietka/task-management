@@ -96,7 +96,6 @@ fun Project(projectData: ProjectData, navController: NavController){
                     verticalAlignment = Alignment.CenterVertically)
                 {
                     Text(text = projectData.projectEntity.name, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                    Text(text = "${projectData.numberOfTasks} tasks", fontSize = 16.sp)
                 }
                 Text(modifier = Modifier.padding(top = 10.dp), text = projectData.projectEntity.description, fontSize = 18.sp)
             }

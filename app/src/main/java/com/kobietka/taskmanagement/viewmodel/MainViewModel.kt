@@ -39,8 +39,6 @@ class MainViewModel
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.io())
                             .subscribe { numberOfTasks ->
-                                Log.e("index", index.toString())
-                                Log.e("size", projects.size.toString())
                                 projectsData.add(ProjectData(projectEntity, numberOfTasks))
                                 if(index == projects.size - 1){
                                     _projects.value = projectsData
