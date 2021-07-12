@@ -49,7 +49,6 @@ class MainActivity : ComponentActivity() {
             TaskManagementTheme {
                 NavHost(navController = navController, startDestination = Route.main) {
                     composable(Route.main){
-                        mainViewModel.clearProjects()
                         window.statusBarColor = MaterialTheme.colors.primary.toArgb()
                         MainScreen(projects, navController)
                     }

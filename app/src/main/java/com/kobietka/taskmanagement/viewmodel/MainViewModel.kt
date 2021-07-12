@@ -1,6 +1,7 @@
 package com.kobietka.taskmanagement.viewmodel
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,24 +26,21 @@ class MainViewModel
         return _projects
     }
 
-    fun clearProjects(){
-        _projects.value = listOf()
-        loadData()
-    }
-
     @SuppressLint("CheckResult")
     fun loadData(){
-        val projectsData = mutableListOf<ProjectData>()
         compositeDisposable.add(
             projectRepository.getAll()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe { projects ->
+                    val projectsData = mutableListOf<ProjectData>()
                     projects.forEachIndexed { index, projectEntity ->
                         projectRepository.getNumberOfTasksInProject(projectEntity.id!!)
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.io())
                             .subscribe { numberOfTasks ->
+                                Log.e("index", index.toString())
+                                Log.e("size", projects.size.toString())
                                 projectsData.add(ProjectData(projectEntity, numberOfTasks))
                                 if(index == projects.size - 1){
                                     _projects.value = projectsData
