@@ -130,7 +130,7 @@ fun CreateTaskScreen(projectId: Int, tasksViewModel: TasksViewModel, navControll
                                   statusId = statusId.value,
                                   onFinish = {
                                       navController.navigate(Route.projectDetailsRoute(projectId)){
-                                          popUpTo(Route.createTask){
+                                          popUpTo(Route.projectDetails){
                                               inclusive = true
                                           }
                                       }
