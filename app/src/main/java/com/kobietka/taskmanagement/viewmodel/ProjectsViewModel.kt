@@ -42,6 +42,13 @@ class ProjectsViewModel
         )
     }
 
+    fun deleteTaskFromProject(projectId: Int, taskId: Int){
+        taskRepository.deleteFromProjectByProjectId(projectId = projectId, taskId = taskId)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+    }
+
     @SuppressLint("CheckResult")
     fun loadProjectWithTasks(id: Int, onFinish: (ProjectEntity, List<TaskEntity>) -> Unit){
         compositeDisposable.add(
