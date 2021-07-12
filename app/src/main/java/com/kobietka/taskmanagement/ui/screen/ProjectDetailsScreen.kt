@@ -4,8 +4,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -21,10 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kobietka.taskmanagement.data.TaskEntity
+import com.kobietka.taskmanagement.ui.theme.indigo
 import com.kobietka.taskmanagement.ui.util.Route
 import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
 
 
+@ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @Composable
 fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, navController: NavController){
@@ -72,13 +77,33 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
                     .fillMaxSize()
                     .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
                     .background(MaterialTheme.colors.secondary)) {
-                Column(modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 20.dp, bottom = 20.dp)) {
+                Column(modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 20.dp, bottom = 0.dp)) {
                     Text(text = "Tasks", fontSize = 19.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                    Divider(modifier = Modifier.padding(top = 30.dp), thickness = 2.dp, color = indigo)
                     LazyColumn(modifier = Modifier
-                        .padding(top = 30.dp)
+                        .padding(top = 0.dp)
                         .fillMaxSize()) {
                         items(tasks.value.size){
-                            Task(taskEntity = tasks.value[it], navController = navController, projectsViewModel = projectsViewModel)
+                            val dismissState = rememberDismissState(confirmStateChange = { dismiss ->
+                                when(dismiss){
+                                    DismissValue.DismissedToEnd -> {
+                                        projectsViewModel.deleteTaskFromProject(
+                                            projectId = tasks.value[it].projectId,
+                                            taskId = tasks.value[it].id!!
+                                        )
+                                        true
+                                    }
+                                    DismissValue.DismissedToStart -> {
+                                        true
+                                    }
+                                    DismissValue.Default -> {
+                                        true
+                                    }
+                                }
+                            })
+                            SwipeToDismiss(state = dismissState, background = {  }) {
+                                Task(taskEntity = tasks.value[it], navController = navController, projectsViewModel = projectsViewModel)
+                            }
                         }
                     }
                 }
@@ -102,7 +127,9 @@ fun Task(taskEntity: TaskEntity, projectsViewModel: ProjectsViewModel, navContro
         )
     }
 
-    Card(shape = RoundedCornerShape(10.dp), modifier = Modifier.padding(bottom = 10.dp).clickable { navController.navigate(Route.taskDetailsRoute(taskEntity.id!!)) }) {
+    Card(shape = RoundedCornerShape(10.dp), modifier = Modifier
+        .padding(bottom = 10.dp)
+        .clickable { navController.navigate(Route.taskDetailsRoute(taskEntity.id!!)) }) {
         Column(modifier = Modifier
             .padding(20.dp)
             .fillMaxWidth()) {
