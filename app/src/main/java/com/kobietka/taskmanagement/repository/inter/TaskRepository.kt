@@ -11,4 +11,5 @@ interface TaskRepository {
     fun getAllByProjectId(projectId: Int): Observable<List<TaskEntity>>
     fun deleteById(id: Int): Completable
     fun getById(id: Int): Maybe<TaskEntity>
+    fun deleteFromProjectByProjectId(projectId: Int, taskId: Int): Completable
 }

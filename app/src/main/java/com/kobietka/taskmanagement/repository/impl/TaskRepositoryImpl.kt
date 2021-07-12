@@ -28,4 +28,8 @@ class TaskRepositoryImpl
         return taskDao.getById(id)
     }
 
+    override fun deleteFromProjectByProjectId(projectId: Int, taskId: Int): Completable {
+        return taskDao.deleteFromProjectByProjectId(projectId, taskId)
+    }
+
 }
