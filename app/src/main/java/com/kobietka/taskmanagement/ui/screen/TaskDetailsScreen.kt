@@ -146,7 +146,7 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
                                 ),
                                 onFinish = {
                                     navController.navigate(Route.projectDetailsRoute(projectId.value)){
-                                        popUpTo(Route.taskDetails){
+                                        popUpTo(Route.projectDetails){
                                             inclusive = true
                                         }
                                     }
