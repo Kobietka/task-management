@@ -46,19 +46,19 @@ class MainActivity : ComponentActivity() {
         mainViewModel.loadData()
 
         setContent {
-            val projects = mainViewModel.projects().observeAsState(listOf())
             val navController = rememberNavController()
             TaskManagementTheme {
                 NavHost(navController = navController, startDestination = Route.main) {
                     composable(Route.main){
                         window.statusBarColor = MaterialTheme.colors.primary.toArgb()
-                        MainScreen(projects, navController)
+                        MainScreen(mainViewModel, navController)
                     }
                     composable(Route.createProject){
                         window.statusBarColor = Color.White.toArgb()
                         CreateProjectScreen(projectsViewModel, navController)
                     }
                     composable(Route.projectDetails, arguments = listOf(navArgument("id") { type = NavType.IntType })){
+                        window.statusBarColor = MaterialTheme.colors.primary.toArgb()
                         ProjectDetailsScreen(
                             projectId = it.arguments?.getInt("id", -1)!!,
                             projectsViewModel = projectsViewModel,
@@ -66,6 +66,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(Route.createTask, arguments = listOf(navArgument("id") { type = NavType.IntType })){
+                        window.statusBarColor = Color.White.toArgb()
                         CreateTaskScreen(
                             projectId = it.arguments?.getInt("id", -1)!!,
                             tasksViewModel = tasksViewModel,
@@ -73,6 +74,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(Route.taskDetails, arguments = listOf(navArgument("id") { type = NavType.IntType })){
+                        window.statusBarColor = Color.White.toArgb()
                         TaskDetailsScreen(
                             taskId = it.arguments?.getInt("id", -1)!!,
                             tasksViewModel = tasksViewModel,
@@ -80,6 +82,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(Route.editProject, arguments = listOf(navArgument("id") { type = NavType.IntType })){
+                        window.statusBarColor = Color.White.toArgb()
                         EditProjectScreen(
                             projectId = it.arguments?.getInt("id", -1)!!,
                             projectsViewModel = projectsViewModel,

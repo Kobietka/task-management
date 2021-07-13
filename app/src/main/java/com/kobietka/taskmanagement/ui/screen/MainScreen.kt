@@ -19,6 +19,7 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,12 +37,19 @@ import com.kobietka.taskmanagement.domain.model.ProjectData
 import com.kobietka.taskmanagement.ui.theme.indigo
 import com.kobietka.taskmanagement.ui.theme.orange
 import com.kobietka.taskmanagement.ui.util.Route
+import com.kobietka.taskmanagement.viewmodel.MainViewModel
 
 
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
-fun MainScreen(projects: State<List<ProjectData>>, navController: NavController){
+fun MainScreen(mainViewModel: MainViewModel, navController: NavController){
+    val projects = remember { mutableStateOf<List<ProjectEntity>>(listOf()) }
+
+    mainViewModel.loadProjects {
+        projects.value = it
+    }
+
     Scaffold(
         backgroundColor = MaterialTheme.colors.primary,
         floatingActionButton = {
@@ -68,7 +76,7 @@ fun MainScreen(projects: State<List<ProjectData>>, navController: NavController)
                         .padding(top = 0.dp)
                         .fillMaxSize()) {
                         items(projects.value.size){
-                            Project(projectData = projects.value[it], navController = navController)
+                            Project(projectEntity = projects.value[it], navController = navController)
                         }
                     }
                 }
@@ -80,7 +88,7 @@ fun MainScreen(projects: State<List<ProjectData>>, navController: NavController)
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
-fun Project(projectData: ProjectData, navController: NavController){
+fun Project(projectEntity: ProjectEntity, navController: NavController){
     Card(
         elevation = 4.dp,
         shape = RoundedCornerShape(10.dp),
@@ -90,8 +98,8 @@ fun Project(projectData: ProjectData, navController: NavController){
             .combinedClickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(),
-                onClick = { navController.navigate(Route.projectDetailsRoute(projectData.projectEntity.id!!)) },
-                onLongClick = { navController.navigate(Route.editProjectRoute(projectData.projectEntity.id!!)) }
+                onClick = { navController.navigate(Route.projectDetailsRoute(projectEntity.id!!)) },
+                onLongClick = { navController.navigate(Route.editProjectRoute(projectEntity.id!!)) }
             )){
 
         Row(modifier = Modifier.padding(20.dp)){
@@ -101,9 +109,9 @@ fun Project(projectData: ProjectData, navController: NavController){
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically)
                 {
-                    Text(text = projectData.projectEntity.name, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Text(text = projectEntity.name, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 }
-                Text(modifier = Modifier.padding(top = 10.dp), text = projectData.projectEntity.description, fontSize = 18.sp)
+                Text(modifier = Modifier.padding(top = 10.dp), text = projectEntity.description, fontSize = 18.sp)
             }
         }
     }

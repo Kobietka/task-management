@@ -26,6 +26,15 @@ class MainViewModel
         return _projects
     }
 
+    fun loadProjects(onFinish: (List<ProjectEntity>) -> Unit){
+        compositeDisposable.add(
+            projectRepository.getAllMaybe()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(onFinish)
+        )
+    }
+
     @SuppressLint("CheckResult")
     fun loadData(){
         compositeDisposable.add(
