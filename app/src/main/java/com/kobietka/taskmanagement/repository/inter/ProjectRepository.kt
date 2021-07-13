@@ -11,6 +11,7 @@ interface ProjectRepository {
     fun insert(projectEntity: ProjectEntity): Completable
     fun getAll(): Observable<List<ProjectEntity>>
     fun deleteById(id: Int): Completable
+    fun getAllMaybe(): Maybe<List<ProjectEntity>>
     fun getById(id: Int): Maybe<ProjectEntity>
     fun getNumberOfTasksInProject(id: Int): Maybe<Int>
 }

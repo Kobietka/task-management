@@ -25,6 +25,10 @@ class ProjectRepositoryImpl
         return projectDao.deleteById(id)
     }
 
+    override fun getAllMaybe(): Maybe<List<ProjectEntity>> {
+        return projectDao.getAllMaybe()
+    }
+
     override fun getById(id: Int): Maybe<ProjectEntity> {
         return projectDao.getById(id)
     }

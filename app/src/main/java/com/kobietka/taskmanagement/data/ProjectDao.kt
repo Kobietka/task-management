@@ -19,6 +19,9 @@ interface ProjectDao {
     @Query("select * from project")
     fun getAll(): Observable<List<ProjectEntity>>
 
+    @Query("select * from project")
+    fun getAllMaybe(): Maybe<List<ProjectEntity>>
+
     @Query("select * from project where id = :id")
     fun getById(id: Int): Maybe<ProjectEntity>
 
