@@ -50,6 +50,13 @@ class TasksViewModel
         )
     }
 
+    fun deleteTask(taskId: Int){
+        taskRepository.deleteById(taskId)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+    }
+
     fun loadTask(taskId: Int, onFinish: (TaskEntity) -> Unit){
         compositeDisposable.add(
             taskRepository.getById(taskId)

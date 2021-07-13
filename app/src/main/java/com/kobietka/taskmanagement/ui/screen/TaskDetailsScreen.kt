@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,6 +71,24 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
     }
 
     Column {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End){
+            Icon(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .height(35.dp)
+                    .width(35.dp)
+                    .clickable {
+                        tasksViewModel.deleteTask(taskId)
+                        navController.navigate(Route.projectDetailsRoute(projectId.value)){
+                            popUpTo(Route.projectDetails){
+                                inclusive = true
+                            }
+                        }
+                    },
+                imageVector = Icons.Filled.Delete,
+                contentDescription = "delete task"
+            )
+        }
         Row(
             Modifier
                 .padding(top = 70.dp, start = 25.dp, end = 25.dp, bottom = 70.dp)
