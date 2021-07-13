@@ -84,26 +84,7 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
                         .padding(top = 0.dp)
                         .fillMaxSize()) {
                         items(tasks.value.size){
-                            val dismissState = rememberDismissState(confirmStateChange = { dismiss ->
-                                when(dismiss){
-                                    DismissValue.DismissedToEnd -> {
-                                        projectsViewModel.deleteTaskFromProject(
-                                            projectId = tasks.value[it].projectId,
-                                            taskId = tasks.value[it].id!!
-                                        )
-                                        true
-                                    }
-                                    DismissValue.DismissedToStart -> {
-                                        true
-                                    }
-                                    DismissValue.Default -> {
-                                        true
-                                    }
-                                }
-                            })
-                            SwipeToDismiss(state = dismissState, background = {  }) {
-                                Task(taskEntity = tasks.value[it], navController = navController, projectsViewModel = projectsViewModel)
-                            }
+                            Task(taskEntity = tasks.value[it], navController = navController, projectsViewModel = projectsViewModel)
                         }
                     }
                 }
