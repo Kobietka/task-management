@@ -1,12 +1,12 @@
 package com.kobietka.taskmanagement.ui.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +55,28 @@ fun EditProjectScreen(projectId: Int, projectsViewModel: ProjectsViewModel, navC
     }
 
     Column {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End){
+            Icon(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .height(35.dp)
+                    .width(35.dp)
+                    .clickable {
+                        projectsViewModel.deleteProject(
+                            projectId = projectId,
+                            onFinish = {
+                                navController.navigate(Route.main){
+                                    popUpTo(Route.main){
+                                        inclusive = true
+                                    }
+                                }
+                            }
+                        )
+                    },
+                imageVector = Icons.Filled.Delete,
+                contentDescription = "delete project"
+            )
+        }
         Row(
             Modifier
                 .padding(top = 70.dp, start = 25.dp, end = 25.dp, bottom = 70.dp)
