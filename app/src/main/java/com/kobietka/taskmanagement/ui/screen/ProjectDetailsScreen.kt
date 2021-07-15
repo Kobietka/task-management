@@ -77,11 +77,12 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
                     .fillMaxSize()
                     .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
                     .background(MaterialTheme.colors.secondary)) {
-                Column(modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 20.dp, bottom = 0.dp)) {
-                    Text(text = "Tasks", fontSize = 19.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-                    Divider(modifier = Modifier.padding(top = 30.dp), thickness = 2.dp, color = indigo)
+                Column {
+                    Card(modifier = Modifier.fillMaxWidth().height(90.dp), backgroundColor = MaterialTheme.colors.secondary, elevation = 20.dp) {
+                        Text(modifier = Modifier.padding(top = 32.dp, start = 20.dp, end = 20.dp), text = "Tasks", fontSize = 19.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                    }
                     LazyColumn(modifier = Modifier
-                        .padding(top = 0.dp)
+                        .padding(start = 20.dp, end = 20.dp, top = 5.dp)
                         .fillMaxSize()) {
                         items(tasks.value.size){
                             Task(taskEntity = tasks.value[it], navController = navController, projectsViewModel = projectsViewModel)

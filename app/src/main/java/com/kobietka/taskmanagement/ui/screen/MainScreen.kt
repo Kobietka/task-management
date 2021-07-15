@@ -1,10 +1,8 @@
 package com.kobietka.taskmanagement.ui.screen
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -13,29 +11,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kobietka.taskmanagement.data.ProjectEntity
-import com.kobietka.taskmanagement.domain.model.ProjectData
-import com.kobietka.taskmanagement.ui.theme.indigo
-import com.kobietka.taskmanagement.ui.theme.orange
 import com.kobietka.taskmanagement.ui.util.Route
 import com.kobietka.taskmanagement.viewmodel.MainViewModel
 
@@ -59,7 +47,7 @@ fun MainScreen(mainViewModel: MainViewModel, navController: NavController){
         },
         topBar = {
             Column(modifier = Modifier.padding(20.dp)) {
-                Text(text = "Hi, John", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                Text(text = "Hi!", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
                 Text(text = "You have got some work to do!", fontSize = 16.sp, color = Color.Black)
             }
         },
@@ -69,11 +57,12 @@ fun MainScreen(mainViewModel: MainViewModel, navController: NavController){
                     .fillMaxSize()
                     .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
                     .background(MaterialTheme.colors.secondary)) {
-                Column(modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 20.dp, bottom = 0.dp)) {
-                    Text(text = "Your projects", fontSize = 19.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-                    Divider(modifier = Modifier.padding(top = 30.dp), thickness = 2.dp, color = indigo)
+                Column {
+                    Card(modifier = Modifier.fillMaxWidth().height(90.dp), backgroundColor = MaterialTheme.colors.secondary, elevation = 20.dp) {
+                        Text(modifier = Modifier.padding(top = 32.dp, start = 20.dp, end = 20.dp), text = "Your projects", fontSize = 19.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                    }
                     LazyColumn(modifier = Modifier
-                        .padding(top = 0.dp)
+                        .padding(start = 20.dp, end = 20.dp, top = 5.dp)
                         .fillMaxSize()) {
                         items(projects.value.size){
                             Project(projectEntity = projects.value[it], navController = navController)
