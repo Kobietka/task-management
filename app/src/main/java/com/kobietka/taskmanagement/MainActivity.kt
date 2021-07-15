@@ -62,7 +62,8 @@ class MainActivity : ComponentActivity() {
                         ProjectDetailsScreen(
                             projectId = it.arguments?.getInt("id", -1)!!,
                             projectsViewModel = projectsViewModel,
-                            navController = navController
+                            navController = navController,
+                            tasksViewModel = tasksViewModel
                         )
                     }
                     composable(Route.createTask, arguments = listOf(navArgument("id") { type = NavType.IntType })){
