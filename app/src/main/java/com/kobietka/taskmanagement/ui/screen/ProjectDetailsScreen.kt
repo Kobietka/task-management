@@ -118,6 +118,11 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
                             DropdownMenuItem(onClick = { taskListFilter.value = "by status"; filterMenuExpanded.value = false }) {
                                 Text(text = "By status")
                             }
+                            statuses.value.forEach { taskStatus ->
+                                DropdownMenuItem(onClick = { taskListFilter.value = taskStatus.name; filterMenuExpanded.value = false }) {
+                                    Text(text = taskStatus.name.firstCapital())
+                                }
+                            }
                         }
                     }
                     when(taskListFilter.value){
@@ -137,6 +142,19 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
                                 navController = navController,
                                 projectsViewModel = projectsViewModel
                             )
+                        }
+                        else -> {
+                            statuses.value.forEach { taskStatus ->
+                                if(taskStatus.name == taskListFilter.value){
+                                    TaskListWithOnlyOneStatus(
+                                        statuses = statuses.value,
+                                        statusId = taskStatus.id!!,
+                                        tasks = tasks.value,
+                                        navController = navController,
+                                        projectsViewModel = projectsViewModel
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -202,12 +220,33 @@ fun Task(taskEntity: TaskEntity, projectsViewModel: ProjectsViewModel, navContro
 fun TaskListByStatus(statuses: List<TaskStatusEntity>, tasks: List<TaskEntity>, navController: NavController, projectsViewModel: ProjectsViewModel){
     val scrollState = rememberScrollState()
 
-    Column(Modifier.verticalScroll(scrollState, true).padding(start = 20.dp, end = 20.dp, top = 5.dp)) {
+    Column(
+        Modifier
+            .verticalScroll(scrollState, true)
+            .padding(start = 20.dp, end = 20.dp, top = 5.dp)) {
         statuses.forEach { status ->
             val tasksWithStatus = tasks.filter { task -> task.statusId == status.id }
             Text(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp), text = status.name, color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 17.sp)
             tasksWithStatus.forEach {
                 Task(taskEntity = it, navController = navController, projectsViewModel = projectsViewModel)
+            }
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@Composable
+fun TaskListWithOnlyOneStatus(statuses: List<TaskStatusEntity>, statusId: Int, tasks: List<TaskEntity>, navController: NavController, projectsViewModel: ProjectsViewModel){
+    val filteredTasks = tasks.filter { task -> task.statusId == statusId }
+    val status = statuses.first { taskStatus -> taskStatus.id == statusId }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Text(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp, start = 20.dp), text = status.name, color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 17.sp)
+        LazyColumn(modifier = Modifier
+            .padding(start = 20.dp, end = 20.dp, top = 5.dp)
+            .fillMaxSize()) {
+            items(filteredTasks.size){
+                Task(taskEntity = filteredTasks[it], navController = navController, projectsViewModel = projectsViewModel)
             }
         }
     }
@@ -226,7 +265,9 @@ fun statusGreen(): Color {
     return Color(0xFF81C784)
 }
 
-
+fun String.firstCapital(): String {
+    return this.first().uppercase() + this.substring(1)
+}
 
 
 
