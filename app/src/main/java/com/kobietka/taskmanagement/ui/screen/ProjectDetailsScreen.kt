@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -53,6 +54,8 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
 
     val filterMenuExpanded = remember { mutableStateOf(false) }
 
+    val topAppBarVisible = remember { mutableStateOf(true) }
+
     if(firstTime.value){
         projectsViewModel.loadProjectWithTasks(
             id = projectId,
@@ -78,13 +81,15 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
             }
         },
         topBar = {
-            Column(Modifier.padding(20.dp)) {
-                Text(text = "Welcome to", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.Black)
-                AnimatedVisibility(visible = name.value != "") {
-                    Text(modifier = Modifier.clickable { descriptionVisible.value = !descriptionVisible.value }, text = name.value, fontSize = 20.sp, color = Color.Black, fontWeight = FontWeight.Bold)
-                }
-                AnimatedVisibility(visible = descriptionVisible.value) {
-                    Text(modifier = Modifier.padding(top = 5.dp), text = description.value, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+            AnimatedVisibility(visible = topAppBarVisible.value) {
+                Column(Modifier.padding(20.dp)) {
+                    Text(text = "Welcome to", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.Black)
+                    AnimatedVisibility(visible = name.value != "") {
+                        Text(modifier = Modifier.clickable { descriptionVisible.value = !descriptionVisible.value }, text = name.value, fontSize = 20.sp, color = Color.Black, fontWeight = FontWeight.Bold)
+                    }
+                    AnimatedVisibility(visible = descriptionVisible.value) {
+                        Text(modifier = Modifier.padding(top = 5.dp), text = description.value, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                    }
                 }
             }
         },
@@ -127,16 +132,16 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
                     }
                     when(taskListFilter.value){
                         "no filter" -> {
-                            LazyColumn(modifier = Modifier
-                                .padding(start = 20.dp, end = 20.dp, top = 5.dp)
-                                .fillMaxSize()) {
-                                items(tasks.value.size){
-                                    Task(taskEntity = tasks.value[it], navController = navController, projectsViewModel = projectsViewModel)
-                                }
-                            }
+                            TaskList(
+                                topAppBarState = topAppBarVisible,
+                                tasks = tasks.value,
+                                navController = navController,
+                                projectsViewModel = projectsViewModel
+                            )
                         }
                         "by status" -> {
                             TaskListByStatus(
+                                topAppBarState = topAppBarVisible,
                                 statuses = statuses.value,
                                 tasks = tasks.value,
                                 navController = navController,
@@ -147,6 +152,7 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
                             statuses.value.forEach { taskStatus ->
                                 if(taskStatus.name == taskListFilter.value){
                                     TaskListWithOnlyOneStatus(
+                                        topAppBarState = topAppBarVisible,
                                         statuses = statuses.value,
                                         statusId = taskStatus.id!!,
                                         tasks = tasks.value,
@@ -217,8 +223,26 @@ fun Task(taskEntity: TaskEntity, projectsViewModel: ProjectsViewModel, navContro
 
 @ExperimentalAnimationApi
 @Composable
-fun TaskListByStatus(statuses: List<TaskStatusEntity>, tasks: List<TaskEntity>, navController: NavController, projectsViewModel: ProjectsViewModel){
+fun TaskList(topAppBarState: MutableState<Boolean>, tasks: List<TaskEntity>, navController: NavController, projectsViewModel: ProjectsViewModel){
+    val lazyListState = rememberLazyListState()
+
+    topAppBarState.value = !lazyListState.isScrollInProgress
+
+    LazyColumn(modifier = Modifier
+        .padding(start = 20.dp, end = 20.dp, top = 5.dp)
+        .fillMaxSize(), state = lazyListState) {
+        items(tasks.size){
+            Task(taskEntity = tasks[it], navController = navController, projectsViewModel = projectsViewModel)
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@Composable
+fun TaskListByStatus(topAppBarState: MutableState<Boolean>, statuses: List<TaskStatusEntity>, tasks: List<TaskEntity>, navController: NavController, projectsViewModel: ProjectsViewModel){
     val scrollState = rememberScrollState()
+
+    topAppBarState.value = !scrollState.isScrollInProgress
 
     Column(
         Modifier
@@ -236,15 +260,17 @@ fun TaskListByStatus(statuses: List<TaskStatusEntity>, tasks: List<TaskEntity>, 
 
 @ExperimentalAnimationApi
 @Composable
-fun TaskListWithOnlyOneStatus(statuses: List<TaskStatusEntity>, statusId: Int, tasks: List<TaskEntity>, navController: NavController, projectsViewModel: ProjectsViewModel){
+fun TaskListWithOnlyOneStatus(topAppBarState: MutableState<Boolean>, statuses: List<TaskStatusEntity>, statusId: Int, tasks: List<TaskEntity>, navController: NavController, projectsViewModel: ProjectsViewModel){
     val filteredTasks = tasks.filter { task -> task.statusId == statusId }
     val status = statuses.first { taskStatus -> taskStatus.id == statusId }
+    val lazyListState = rememberLazyListState()
+
+    topAppBarState.value = !lazyListState.isScrollInProgress
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Text(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp, start = 20.dp), text = status.name, color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 17.sp)
         LazyColumn(modifier = Modifier
             .padding(start = 20.dp, end = 20.dp, top = 5.dp)
-            .fillMaxSize()) {
+            .fillMaxSize(), state = lazyListState) {
             items(filteredTasks.size){
                 Task(taskEntity = filteredTasks[it], navController = navController, projectsViewModel = projectsViewModel)
             }
