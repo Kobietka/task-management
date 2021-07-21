@@ -1,5 +1,6 @@
 package com.kobietka.taskmanagement.ui.screen
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -7,6 +8,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -33,10 +35,14 @@ import com.kobietka.taskmanagement.viewmodel.MainViewModel
 @Composable
 fun MainScreen(mainViewModel: MainViewModel, navController: NavController){
     val projects = remember { mutableStateOf<List<ProjectEntity>>(listOf()) }
+    val lazyColumnState = rememberLazyListState()
+    val topAppBarVisible = remember { mutableStateOf(true) }
 
     mainViewModel.loadProjects {
         projects.value = it
     }
+
+    topAppBarVisible.value = !lazyColumnState.isScrollInProgress
 
     Scaffold(
         backgroundColor = MaterialTheme.colors.primary,
@@ -46,9 +52,11 @@ fun MainScreen(mainViewModel: MainViewModel, navController: NavController){
             }
         },
         topBar = {
-            Column(modifier = Modifier.padding(20.dp)) {
-                Text(text = "Hi!", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-                Text(text = "You have got some work to do!", fontSize = 16.sp, color = Color.Black)
+            AnimatedVisibility(visible = topAppBarVisible.value) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text(text = "Hi!", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                    Text(text = "You have got some work to do!", fontSize = 16.sp, color = Color.Black)
+                }
             }
         },
         content = {
@@ -58,12 +66,14 @@ fun MainScreen(mainViewModel: MainViewModel, navController: NavController){
                     .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
                     .background(MaterialTheme.colors.secondary)) {
                 Column {
-                    Card(modifier = Modifier.fillMaxWidth().height(90.dp), backgroundColor = MaterialTheme.colors.secondary, elevation = 20.dp) {
+                    Card(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(90.dp), backgroundColor = MaterialTheme.colors.secondary, elevation = 20.dp) {
                         Text(modifier = Modifier.padding(top = 32.dp, start = 20.dp, end = 20.dp), text = "Your projects", fontSize = 19.sp, fontWeight = FontWeight.Bold, color = Color.Black)
                     }
                     LazyColumn(modifier = Modifier
                         .padding(start = 20.dp, end = 20.dp, top = 5.dp)
-                        .fillMaxSize()) {
+                        .fillMaxSize(), state = lazyColumnState) {
                         items(projects.value.size){
                             Project(projectEntity = projects.value[it], navController = navController)
                         }
