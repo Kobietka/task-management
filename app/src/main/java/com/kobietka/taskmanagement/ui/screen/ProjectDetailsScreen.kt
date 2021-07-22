@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -190,7 +191,10 @@ fun Task(taskEntity: TaskEntity, projectsViewModel: ProjectsViewModel, navContro
         Column(modifier = Modifier
             .padding(20.dp)
             .fillMaxWidth()) {
-            Text(modifier = Modifier.padding(bottom = 10.dp), text = taskEntity.name, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
+                Text(modifier = Modifier.padding(bottom = 10.dp), text = taskEntity.name, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text(text = taskEntity.dueDate, fontSize = 16.sp, fontWeight = FontWeight.Normal, color = Color.Gray)
+            }
             AnimatedVisibility(visible = status.value != "") {
                 Column(
                     modifier = Modifier
