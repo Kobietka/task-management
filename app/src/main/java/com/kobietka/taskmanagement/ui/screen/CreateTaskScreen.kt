@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,7 +34,7 @@ import com.kobietka.taskmanagement.viewmodel.TasksViewModel
 
 @ExperimentalComposeUiApi
 @Composable
-fun CreateTaskScreen(projectId: Int, tasksViewModel: TasksViewModel, navController: NavController){
+fun CreateTaskScreen(projectId: Int, tasksViewModel: TasksViewModel, navController: NavController, onDateClick: () -> Unit){
     val firstTime = remember { mutableStateOf(true) }
 
     val taskStatuses = remember { mutableStateOf(listOf<TaskStatusEntity>()) }
@@ -41,6 +42,8 @@ fun CreateTaskScreen(projectId: Int, tasksViewModel: TasksViewModel, navControll
     val menuExpanded = remember { mutableStateOf(false) }
     val statusBoxText = remember { mutableStateOf("Select task status") }
     val statusId = remember { mutableStateOf(-1) }
+
+    val dateText = tasksViewModel.taskDate().observeAsState(initial = "Due date")
 
     val name = remember { mutableStateOf(TextFieldValue("")) }
     val nameError = remember { mutableStateOf(false) }
@@ -120,17 +123,27 @@ fun CreateTaskScreen(projectId: Int, tasksViewModel: TasksViewModel, navControll
                     }
                 }
 
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+                    .padding(top = 10.dp)
+                    .background(Color.White)
+                    .clickable { onDateClick() }, contentAlignment = Alignment.Center){
+                    Text(text = dateText.value)
+                }
+
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(60.dp)
                         .padding(top = 10.dp),
                     onClick = {
-                          if(name.value.text.isNotBlank() && description.value.text.isNotBlank() && statusId.value != -1){
+                          if(name.value.text.isNotBlank() && description.value.text.isNotBlank() && statusId.value != -1 && dateText.value != "Due date"){
                               tasksViewModel.insertTask(
                                   projectId = projectId,
                                   name = name.value.text,
                                   description = description.value.text,
+                                  dueDate = dateText.value,
                                   statusId = statusId.value,
                                   onFinish = {
                                       navController.navigate(Route.projectDetailsRoute(projectId)){
@@ -138,6 +151,7 @@ fun CreateTaskScreen(projectId: Int, tasksViewModel: TasksViewModel, navControll
                                               inclusive = true
                                           }
                                       }
+                                      tasksViewModel.clearDate()
                                   }
                               )
                           }
