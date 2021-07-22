@@ -24,5 +24,6 @@ data class TaskEntity(
     @ColumnInfo val name: String,
     @ColumnInfo val description: String,
     @ColumnInfo val creationDate: String,
+    @ColumnInfo val dueDate: String,
     @ColumnInfo val statusId: Int
 )

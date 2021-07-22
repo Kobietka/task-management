@@ -1,6 +1,8 @@
 package com.kobietka.taskmanagement.viewmodel
 
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kobietka.taskmanagement.data.TaskEntity
 import com.kobietka.taskmanagement.data.TaskStatusEntity
@@ -10,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.text.DateFormat
 import java.util.*
 import javax.inject.Inject
 
@@ -21,8 +24,23 @@ class TasksViewModel
 
     private val compositeDisposable = CompositeDisposable()
 
-    fun insertTask(projectId: Int, name: String, description: String, statusId: Int, onFinish: () -> Unit){
-        val currentDate = "${Calendar.DAY_OF_MONTH}/${Calendar.MONTH}/${Calendar.YEAR} ${Calendar.HOUR}:${Calendar.MINUTE}:${Calendar.SECOND}"
+    private val _taskDate = MutableLiveData("Due date")
+
+    fun taskDate(): LiveData<String> {
+        return _taskDate
+    }
+
+    fun setDate(date: String){
+        _taskDate.value = date
+    }
+
+    fun clearDate(){
+        _taskDate.value = "Due date"
+    }
+
+    fun insertTask(projectId: Int, name: String, description: String, statusId: Int, dueDate: String, onFinish: () -> Unit){
+        val calendar = Calendar.getInstance()
+        val currentDate = "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH)}/${calendar.get(Calendar.YEAR)}"
 
         compositeDisposable.add(
             taskRepository.insert(
@@ -32,6 +50,7 @@ class TasksViewModel
                     name = name,
                     description = description,
                     creationDate = currentDate,
+                    dueDate = dueDate,
                     statusId = statusId
                 )
             ).observeOn(AndroidSchedulers.mainThread())
