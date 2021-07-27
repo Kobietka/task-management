@@ -91,7 +91,10 @@ class MainActivity : AppCompatActivity()/*ComponentActivity()*/ {
                         TaskDetailsScreen(
                             taskId = it.arguments?.getInt("id", -1)!!,
                             tasksViewModel = tasksViewModel,
-                            navController = navController
+                            navController = navController,
+                            onDateClick = {
+                                showDatePicker()
+                            }
                         )
                     }
                     composable(Route.editProject, arguments = listOf(navArgument("id") { type = NavType.IntType })){

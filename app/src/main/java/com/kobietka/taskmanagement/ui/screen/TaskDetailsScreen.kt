@@ -8,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,7 +32,7 @@ import com.kobietka.taskmanagement.viewmodel.TasksViewModel
 
 @ExperimentalComposeUiApi
 @Composable
-fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController: NavController){
+fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController: NavController, onDateClick: () -> Unit){
     val firstTime = remember { mutableStateOf(true) }
 
     val taskStatuses = remember { mutableStateOf(listOf<TaskStatusEntity>()) }
@@ -41,6 +42,11 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
     val statusId = remember { mutableStateOf(-1) }
     val projectId = remember { mutableStateOf(-1) }
     val task = remember { mutableStateOf<TaskEntity?>(null) }
+
+    val dateText = remember { mutableStateOf("Due date") }
+    val dateTextFromViewModel = tasksViewModel.taskDate().observeAsState(initial = dateText.value)
+    val dateClicked = remember { mutableStateOf(false) }
+    val dateClickedFirstTime = remember { mutableStateOf(false) }
 
     val name = remember { mutableStateOf(TextFieldValue("")) }
     val nameError = remember { mutableStateOf(false) }
@@ -60,6 +66,7 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
                     name.value = TextFieldValue(taskEntity.name)
                     description.value = TextFieldValue(taskEntity.description)
                     projectId.value = taskEntity.projectId
+                    dateText.value = taskEntity.dueDate
                     statuses.first { it.id == taskEntity.statusId }.also { status ->
                         statusId.value = status.id!!
                         statusBoxText.value = status.name
@@ -68,6 +75,14 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
             )
         }
         firstTime.value = false
+    }
+
+    if(dateClicked.value){
+        if(dateClickedFirstTime.value){
+            tasksViewModel.clearDate()
+            dateClickedFirstTime.value = false
+        }
+        dateText.value = dateTextFromViewModel.value
     }
 
     Column {
@@ -79,8 +94,8 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
                     .width(35.dp)
                     .clickable {
                         tasksViewModel.deleteTask(taskId)
-                        navController.navigate(Route.projectDetailsRoute(projectId.value)){
-                            popUpTo(Route.projectDetails){
+                        navController.navigate(Route.projectDetailsRoute(projectId.value)) {
+                            popUpTo(Route.projectDetails) {
                                 inclusive = true
                             }
                         }
@@ -151,18 +166,28 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
                     }
                 }
 
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+                    .padding(top = 10.dp)
+                    .background(Color.White)
+                    .clickable { onDateClick(); dateClicked.value = true; dateClickedFirstTime.value = true }, contentAlignment = Alignment.Center){
+                    Text(text = if(dateClicked.value) dateTextFromViewModel.value else dateText.value)
+                }
+
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(60.dp)
                         .padding(top = 10.dp),
                     onClick = {
-                        if(name.value.text.isNotBlank() && description.value.text.isNotBlank() && statusId.value != -1){
+                        if(name.value.text.isNotBlank() && description.value.text.isNotBlank() && statusId.value != -1 && dateText.value != "Due date"){
                             tasksViewModel.insertTask(
                                 taskEntity = task.value!!.copy(
                                     name = name.value.text,
                                     description = description.value.text,
-                                    statusId = statusId.value
+                                    statusId = statusId.value,
+                                    dueDate = dateText.value
                                 ),
                                 onFinish = {
                                     navController.navigate(Route.projectDetailsRoute(projectId.value)){
