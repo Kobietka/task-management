@@ -26,5 +26,6 @@ data class TaskEntity(
     @ColumnInfo val creationDate: String,
     @ColumnInfo val dueDate: String,
     @ColumnInfo val statusId: Int,
-    @ColumnInfo val isArchived: Boolean
+    @ColumnInfo val isArchived: Boolean,
+    @ColumnInfo val completionTimeInSeconds: Int?
 )
