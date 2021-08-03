@@ -124,6 +124,9 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
                             DropdownMenuItem(onClick = { taskListFilter.value = "by status"; filterMenuExpanded.value = false }) {
                                 Text(text = "By status")
                             }
+                            DropdownMenuItem(onClick = { taskListFilter.value = "archived"; filterMenuExpanded.value = false }) {
+                                Text(text = "Archived")
+                            }
                             statuses.value.forEach { taskStatus ->
                                 DropdownMenuItem(onClick = { taskListFilter.value = taskStatus.name; filterMenuExpanded.value = false }) {
                                     Text(text = taskStatus.name.firstCapital())
@@ -135,7 +138,7 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
                         "no filter" -> {
                             TaskList(
                                 topAppBarState = topAppBarVisible,
-                                tasks = tasks.value,
+                                tasks = tasks.value.filter { !it.isArchived },
                                 navController = navController,
                                 projectsViewModel = projectsViewModel
                             )
@@ -144,7 +147,15 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
                             TaskListByStatus(
                                 topAppBarState = topAppBarVisible,
                                 statuses = statuses.value,
-                                tasks = tasks.value,
+                                tasks = tasks.value.filter { !it.isArchived },
+                                navController = navController,
+                                projectsViewModel = projectsViewModel
+                            )
+                        }
+                        "archived" -> {
+                            TaskList(
+                                topAppBarState = topAppBarVisible,
+                                tasks = tasks.value.filter { it.isArchived },
                                 navController = navController,
                                 projectsViewModel = projectsViewModel
                             )
@@ -156,7 +167,7 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
                                         topAppBarState = topAppBarVisible,
                                         statuses = statuses.value,
                                         statusId = taskStatus.id!!,
-                                        tasks = tasks.value,
+                                        tasks = tasks.value.filter { !it.isArchived },
                                         navController = navController,
                                         projectsViewModel = projectsViewModel
                                     )
