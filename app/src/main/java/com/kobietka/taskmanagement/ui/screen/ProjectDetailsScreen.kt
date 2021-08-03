@@ -1,29 +1,22 @@
 package com.kobietka.taskmanagement.ui.screen
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.FlingBehavior
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FilterAlt
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -34,12 +27,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kobietka.taskmanagement.data.TaskEntity
 import com.kobietka.taskmanagement.data.TaskStatusEntity
-import com.kobietka.taskmanagement.ui.theme.indigo
 import com.kobietka.taskmanagement.ui.util.Route
 import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
 import com.kobietka.taskmanagement.viewmodel.TasksViewModel
 
 
+@ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @Composable
@@ -183,6 +176,7 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
     )
 }
 
+@ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
 fun Task(taskEntity: TaskEntity, projectsViewModel: ProjectsViewModel, navController: NavController){
@@ -200,7 +194,12 @@ fun Task(taskEntity: TaskEntity, projectsViewModel: ProjectsViewModel, navContro
 
     Card(shape = RoundedCornerShape(10.dp), modifier = Modifier
         .padding(bottom = 10.dp)
-        .clickable { navController.navigate(Route.taskDetailsRoute(taskEntity.id!!)) }) {
+        .combinedClickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = rememberRipple(),
+            onClick = { navController.navigate(Route.taskDetailsRoute(taskEntity.id!!)) },
+            onLongClick = { navController.navigate(Route.measureTimeRoute(taskEntity.id!!)) }
+        )) {
         Column(modifier = Modifier
             .padding(20.dp)
             .fillMaxWidth()) {
@@ -238,6 +237,7 @@ fun Task(taskEntity: TaskEntity, projectsViewModel: ProjectsViewModel, navContro
     }
 }
 
+@ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
 fun TaskList(topAppBarState: MutableState<Boolean>, tasks: List<TaskEntity>, navController: NavController, projectsViewModel: ProjectsViewModel){
@@ -246,7 +246,9 @@ fun TaskList(topAppBarState: MutableState<Boolean>, tasks: List<TaskEntity>, nav
     topAppBarState.value = !lazyListState.isScrollInProgress
 
     if(tasks.isEmpty()){
-        Row(modifier = Modifier.padding(20.dp).fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        Row(modifier = Modifier
+            .padding(20.dp)
+            .fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Text(text = "No tasks", color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 17.sp)
         }
     } else {
@@ -260,6 +262,7 @@ fun TaskList(topAppBarState: MutableState<Boolean>, tasks: List<TaskEntity>, nav
     }
 }
 
+@ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
 fun TaskListByStatus(topAppBarState: MutableState<Boolean>, statuses: List<TaskStatusEntity>, tasks: List<TaskEntity>, navController: NavController, projectsViewModel: ProjectsViewModel){
@@ -268,7 +271,9 @@ fun TaskListByStatus(topAppBarState: MutableState<Boolean>, statuses: List<TaskS
     topAppBarState.value = !scrollState.isScrollInProgress
 
     if(tasks.isEmpty()){
-        Row(modifier = Modifier.padding(20.dp).fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        Row(modifier = Modifier
+            .padding(20.dp)
+            .fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Text(text = "No tasks", color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 17.sp)
         }
     } else {
@@ -287,6 +292,7 @@ fun TaskListByStatus(topAppBarState: MutableState<Boolean>, statuses: List<TaskS
     }
 }
 
+@ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
 fun TaskListWithOnlyOneStatus(topAppBarState: MutableState<Boolean>, statuses: List<TaskStatusEntity>, statusId: Int, tasks: List<TaskEntity>, navController: NavController, projectsViewModel: ProjectsViewModel){
@@ -296,7 +302,9 @@ fun TaskListWithOnlyOneStatus(topAppBarState: MutableState<Boolean>, statuses: L
     topAppBarState.value = !lazyListState.isScrollInProgress
 
     if(filteredTasks.isEmpty()){
-        Row(modifier = Modifier.padding(20.dp).fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        Row(modifier = Modifier
+            .padding(20.dp)
+            .fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Text(text = "No tasks", color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 17.sp)
         }
     } else {
