@@ -1,6 +1,7 @@
 package com.kobietka.taskmanagement.viewmodel
 
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -38,6 +39,34 @@ class TasksViewModel
         _taskDate.value = "Due date"
     }
 
+    fun updateTaskCompletionTime(taskId: Int, seconds: Int){
+        taskRepository.setCompletionTime(taskId, seconds)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+    }
+
+    @SuppressLint("CheckResult")
+    fun changeTaskStatusToCompleted(taskId: Int){
+        compositeDisposable.add(
+            taskStatusRepository.getAll()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe { statuses ->
+                    val status = statuses.first { status -> status.name == "Completed" }
+                    taskRepository.getById(taskId)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe { taskEntity ->
+                            taskRepository.insert(taskEntity.copy(statusId = status.id!!))
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeOn(Schedulers.io())
+                                .subscribe()
+                        }
+                }
+        )
+    }
+
     fun insertTask(projectId: Int, name: String, description: String, statusId: Int, dueDate: String, onFinish: () -> Unit){
         val calendar = Calendar.getInstance()
         val currentDate = "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH)}/${calendar.get(Calendar.YEAR)}"
@@ -52,7 +81,8 @@ class TasksViewModel
                     creationDate = currentDate,
                     dueDate = dueDate,
                     statusId = statusId,
-                    isArchived = false
+                    isArchived = false,
+                    completionTimeInSeconds = null
                 )
             ).observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
