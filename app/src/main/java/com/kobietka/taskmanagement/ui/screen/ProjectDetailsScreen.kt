@@ -51,6 +51,8 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
     val firstTime = remember { mutableStateOf(true) }
     val statuses = remember { mutableStateOf(listOf<TaskStatusEntity>()) }
 
+    val tasksLabel = remember { mutableStateOf("Tasks") }
+
     val taskListFilter = remember { mutableStateOf("no filter") }
 
     val filterMenuExpanded = remember { mutableStateOf(false) }
@@ -105,7 +107,7 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
                         .fillMaxWidth()
                         .height(90.dp), backgroundColor = MaterialTheme.colors.secondary, elevation = 20.dp) {
                         Row(modifier = Modifier.padding(top = 32.dp, start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(text = "Tasks", fontSize = 19.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                            Text(text = tasksLabel.value, fontSize = 19.sp, fontWeight = FontWeight.Bold, color = Color.Black)
                             Icon(
                                 modifier = Modifier
                                     .size(30.dp, 30.dp)
@@ -118,17 +120,17 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
                             )
                         }
                         DropdownMenu(expanded = filterMenuExpanded.value, onDismissRequest = { filterMenuExpanded.value = false }, offset = DpOffset(270.dp, 0.dp)) {
-                            DropdownMenuItem(onClick = { taskListFilter.value = "no filter"; filterMenuExpanded.value = false }) {
+                            DropdownMenuItem(onClick = { taskListFilter.value = "no filter"; filterMenuExpanded.value = false; tasksLabel.value = "No filter" }) {
                                 Text(text = "No filter")
                             }
-                            DropdownMenuItem(onClick = { taskListFilter.value = "by status"; filterMenuExpanded.value = false }) {
+                            DropdownMenuItem(onClick = { taskListFilter.value = "by status"; filterMenuExpanded.value = false; tasksLabel.value = "By status" }) {
                                 Text(text = "By status")
                             }
-                            DropdownMenuItem(onClick = { taskListFilter.value = "archived"; filterMenuExpanded.value = false }) {
+                            DropdownMenuItem(onClick = { taskListFilter.value = "archived"; filterMenuExpanded.value = false; tasksLabel.value = "Archived" }) {
                                 Text(text = "Archived")
                             }
                             statuses.value.forEach { taskStatus ->
-                                DropdownMenuItem(onClick = { taskListFilter.value = taskStatus.name; filterMenuExpanded.value = false }) {
+                                DropdownMenuItem(onClick = { taskListFilter.value = taskStatus.name; filterMenuExpanded.value = false; tasksLabel.value = taskStatus.name.firstCapital() }) {
                                     Text(text = taskStatus.name.firstCapital())
                                 }
                             }
