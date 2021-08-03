@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -87,6 +88,22 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
 
     Column {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End){
+            Icon(
+                modifier = Modifier
+                    .padding(end = 10.dp, top = 20.dp, bottom = 20.dp)
+                    .height(35.dp)
+                    .width(35.dp)
+                    .clickable {
+                        tasksViewModel.archiveTask(taskId)
+                        navController.navigate(Route.projectDetailsRoute(projectId.value)) {
+                            popUpTo(Route.projectDetails) {
+                                inclusive = true
+                            }
+                        }
+                    },
+                imageVector = Icons.Filled.Archive,
+                contentDescription = "archive task"
+            )
             Icon(
                 modifier = Modifier
                     .padding(20.dp)
