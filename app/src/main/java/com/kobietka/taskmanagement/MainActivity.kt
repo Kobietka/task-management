@@ -31,6 +31,7 @@ import com.kobietka.taskmanagement.ui.util.Route
 import com.kobietka.taskmanagement.viewmodel.MainViewModel
 import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
 import com.kobietka.taskmanagement.viewmodel.TasksViewModel
+import com.kobietka.taskmanagement.viewmodel.TimeMeasureViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.sql.Time
 import java.text.SimpleDateFormat
@@ -40,11 +41,12 @@ import java.time.LocalDateTime
 import java.util.*
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity()/*ComponentActivity()*/ {
+class MainActivity : AppCompatActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
     private val projectsViewModel: ProjectsViewModel by viewModels()
     private val tasksViewModel: TasksViewModel by viewModels()
+    private val timeMeasureViewModel: TimeMeasureViewModel by viewModels()
 
     @ExperimentalMaterialApi
     @ExperimentalFoundationApi
@@ -102,6 +104,15 @@ class MainActivity : AppCompatActivity()/*ComponentActivity()*/ {
                         EditProjectScreen(
                             projectId = it.arguments?.getInt("id", -1)!!,
                             projectsViewModel = projectsViewModel,
+                            navController = navController
+                        )
+                    }
+                    composable(Route.measureTime, arguments = listOf(navArgument("id") { type = NavType.IntType })){
+                        window.statusBarColor = MaterialTheme.colors.primary.toArgb()
+                        TaskTimeMeasureScreen(
+                            taskId = it.arguments?.getInt("id", -1)!!,
+                            tasksViewModel = tasksViewModel,
+                            timeMeasureViewModel = timeMeasureViewModel,
                             navController = navController
                         )
                     }
