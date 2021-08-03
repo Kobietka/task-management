@@ -243,11 +243,17 @@ fun TaskList(topAppBarState: MutableState<Boolean>, tasks: List<TaskEntity>, nav
 
     topAppBarState.value = !lazyListState.isScrollInProgress
 
-    LazyColumn(modifier = Modifier
-        .padding(start = 20.dp, end = 20.dp, top = 5.dp)
-        .fillMaxSize(), state = lazyListState) {
-        items(tasks.size){
-            Task(taskEntity = tasks[it], navController = navController, projectsViewModel = projectsViewModel)
+    if(tasks.isEmpty()){
+        Row(modifier = Modifier.padding(20.dp).fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Text(text = "No tasks", color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 17.sp)
+        }
+    } else {
+        LazyColumn(modifier = Modifier
+            .padding(start = 20.dp, end = 20.dp, top = 5.dp)
+            .fillMaxSize(), state = lazyListState) {
+            items(tasks.size){
+                Task(taskEntity = tasks[it], navController = navController, projectsViewModel = projectsViewModel)
+            }
         }
     }
 }
@@ -259,15 +265,21 @@ fun TaskListByStatus(topAppBarState: MutableState<Boolean>, statuses: List<TaskS
 
     topAppBarState.value = !scrollState.isScrollInProgress
 
-    Column(
-        Modifier
-            .verticalScroll(scrollState, true)
-            .padding(start = 20.dp, end = 20.dp, top = 5.dp)) {
-        statuses.forEach { status ->
-            val tasksWithStatus = tasks.filter { task -> task.statusId == status.id }
-            Text(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp), text = status.name, color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 17.sp)
-            tasksWithStatus.forEach {
-                Task(taskEntity = it, navController = navController, projectsViewModel = projectsViewModel)
+    if(tasks.isEmpty()){
+        Row(modifier = Modifier.padding(20.dp).fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Text(text = "No tasks", color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 17.sp)
+        }
+    } else {
+        Column(
+            Modifier
+                .verticalScroll(scrollState, true)
+                .padding(start = 20.dp, end = 20.dp, top = 5.dp)) {
+            statuses.forEach { status ->
+                val tasksWithStatus = tasks.filter { task -> task.statusId == status.id }
+                if(tasksWithStatus.isNotEmpty())  Text(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp), text = status.name, color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 17.sp)
+                tasksWithStatus.forEach {
+                    Task(taskEntity = it, navController = navController, projectsViewModel = projectsViewModel)
+                }
             }
         }
     }
@@ -277,17 +289,22 @@ fun TaskListByStatus(topAppBarState: MutableState<Boolean>, statuses: List<TaskS
 @Composable
 fun TaskListWithOnlyOneStatus(topAppBarState: MutableState<Boolean>, statuses: List<TaskStatusEntity>, statusId: Int, tasks: List<TaskEntity>, navController: NavController, projectsViewModel: ProjectsViewModel){
     val filteredTasks = tasks.filter { task -> task.statusId == statusId }
-    val status = statuses.first { taskStatus -> taskStatus.id == statusId }
     val lazyListState = rememberLazyListState()
 
     topAppBarState.value = !lazyListState.isScrollInProgress
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(modifier = Modifier
-            .padding(start = 20.dp, end = 20.dp, top = 5.dp)
-            .fillMaxSize(), state = lazyListState) {
-            items(filteredTasks.size){
-                Task(taskEntity = filteredTasks[it], navController = navController, projectsViewModel = projectsViewModel)
+    if(filteredTasks.isEmpty()){
+        Row(modifier = Modifier.padding(20.dp).fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Text(text = "No tasks", color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 17.sp)
+        }
+    } else {
+        Column(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(modifier = Modifier
+                .padding(start = 20.dp, end = 20.dp, top = 5.dp)
+                .fillMaxSize(), state = lazyListState) {
+                items(filteredTasks.size){
+                    Task(taskEntity = filteredTasks[it], navController = navController, projectsViewModel = projectsViewModel)
+                }
             }
         }
     }

@@ -71,11 +71,17 @@ fun MainScreen(mainViewModel: MainViewModel, navController: NavController){
                         .height(90.dp), backgroundColor = MaterialTheme.colors.secondary, elevation = 20.dp) {
                         Text(modifier = Modifier.padding(top = 32.dp, start = 20.dp, end = 20.dp), text = "Your projects", fontSize = 19.sp, fontWeight = FontWeight.Bold, color = Color.Black)
                     }
-                    LazyColumn(modifier = Modifier
-                        .padding(start = 20.dp, end = 20.dp, top = 5.dp)
-                        .fillMaxSize(), state = lazyColumnState) {
-                        items(projects.value.size){
-                            Project(projectEntity = projects.value[it], navController = navController)
+                    if(projects.value.isEmpty()){
+                        Row(modifier = Modifier.padding(20.dp).fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                            Text(text = "No projects", color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 17.sp)
+                        }
+                    } else {
+                        LazyColumn(modifier = Modifier
+                            .padding(start = 20.dp, end = 20.dp, top = 5.dp)
+                            .fillMaxSize(), state = lazyColumnState) {
+                            items(projects.value.size){
+                                Project(projectEntity = projects.value[it], navController = navController)
+                            }
                         }
                     }
                 }
