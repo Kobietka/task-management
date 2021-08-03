@@ -10,6 +10,7 @@ class Route {
         const val createTask = "create_task/{id}"
         const val taskDetails = "task/{id}"
         const val editProject = "edit_project/{id}"
+        const val measureTime = "time/{id}"
 
         fun projectDetailsRoute(id: Int): String {
             return "project/$id"
@@ -25,6 +26,10 @@ class Route {
 
         fun editProjectRoute(projectId: Int): String {
             return "edit_project/$projectId"
+        }
+
+        fun measureTimeRoute(taskId: Int): String {
+            return "time/$taskId"
         }
     }
 }
