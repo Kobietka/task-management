@@ -51,7 +51,8 @@ class TasksViewModel
                     description = description,
                     creationDate = currentDate,
                     dueDate = dueDate,
-                    statusId = statusId
+                    statusId = statusId,
+                    isArchived = false
                 )
             ).observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -67,6 +68,13 @@ class TasksViewModel
                 .subscribeOn(Schedulers.io())
                 .subscribe(onFinish)
         )
+    }
+
+    fun archiveTask(taskId: Int){
+        taskRepository.changeArchivedStatus(taskId, true)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe()
     }
 
     fun deleteTask(taskId: Int){
