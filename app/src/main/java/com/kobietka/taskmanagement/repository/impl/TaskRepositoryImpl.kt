@@ -32,4 +32,8 @@ class TaskRepositoryImpl
         return taskDao.deleteFromProjectByProjectId(projectId, taskId)
     }
 
+    override fun changeArchivedStatus(taskId: Int, archived: Boolean): Completable {
+        return taskDao.changeArchivedStatus(taskId, archived)
+    }
+
 }

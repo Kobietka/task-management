@@ -27,4 +27,7 @@ interface TaskDao {
     @Query("select * from task where id = :id")
     fun getById(id: Int): Maybe<TaskEntity>
 
+    @Query("update task set isArchived = :archived where id = :taskId")
+    fun changeArchivedStatus(taskId: Int, archived: Boolean): Completable
+
 }
