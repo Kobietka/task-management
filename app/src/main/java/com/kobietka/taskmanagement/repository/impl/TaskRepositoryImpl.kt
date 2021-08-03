@@ -36,4 +36,8 @@ class TaskRepositoryImpl
         return taskDao.changeArchivedStatus(taskId, archived)
     }
 
+    override fun setCompletionTime(taskId: Int, seconds: Int): Completable {
+        return taskDao.setCompletionTime(taskId, seconds)
+    }
+
 }
