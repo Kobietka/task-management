@@ -227,7 +227,7 @@ fun Task(taskEntity: TaskEntity, projectsViewModel: ProjectsViewModel, navContro
                             end = 20.dp,
                             bottom = 10.dp
                         ),
-                        text = status.value,
+                        text = status.value + if(status.value == "Completed" && taskEntity.completionTimeInSeconds != null) " in ${taskEntity.completionTimeInSeconds/60} minutes" else "",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Medium
                     )
