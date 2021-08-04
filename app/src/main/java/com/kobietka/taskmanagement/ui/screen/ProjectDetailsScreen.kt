@@ -12,11 +12,13 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FilterAlt
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -43,6 +45,8 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
     val tasks = remember { mutableStateOf(listOf<TaskEntity>()) }
     val firstTime = remember { mutableStateOf(true) }
     val statuses = remember { mutableStateOf(listOf<TaskStatusEntity>()) }
+
+    val infoVisible = remember { mutableStateOf(false) }
 
     val tasksLabel = remember { mutableStateOf("Tasks") }
 
@@ -78,13 +82,31 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
         },
         topBar = {
             AnimatedVisibility(visible = topAppBarVisible.value) {
-                Column(Modifier.padding(20.dp)) {
-                    Text(text = "Welcome to", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.Black)
-                    AnimatedVisibility(visible = name.value != "") {
-                        Text(modifier = Modifier.clickable { descriptionVisible.value = !descriptionVisible.value }, text = name.value, fontSize = 20.sp, color = Color.Black, fontWeight = FontWeight.Bold)
+                Column(horizontalAlignment = Alignment.CenterHorizontally){
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
+                        Column {
+                            Text(text = "Welcome to", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.Black)
+                            AnimatedVisibility(visible = name.value != "") {
+                                Text(modifier = Modifier.clickable { descriptionVisible.value = !descriptionVisible.value }, text = name.value, fontSize = 20.sp, color = Color.Black, fontWeight = FontWeight.Bold)
+                            }
+                            AnimatedVisibility(visible = descriptionVisible.value) {
+                                Text(modifier = Modifier.padding(top = 5.dp), text = description.value, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                            }
+                        }
+                        Icon(modifier = Modifier
+                            .size(30.dp, 30.dp)
+                            .clickable { infoVisible.value = !infoVisible.value }, imageVector = Icons.Outlined.Info, contentDescription = "info", tint = Color.Black)
                     }
-                    AnimatedVisibility(visible = descriptionVisible.value) {
-                        Text(modifier = Modifier.padding(top = 5.dp), text = description.value, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                    AnimatedVisibility(visible = infoVisible.value) {
+                        Card(modifier = Modifier.padding(10.dp), backgroundColor = Color.White) {
+                            Column(modifier = Modifier.padding(20.dp)) {
+                                Text(text = "To create task click + button.")
+                                Text(text = "Click on task to edit it.")
+                                Text(text = "Long click on task to measure time.")
+                            }
+                        }
                     }
                 }
             }
