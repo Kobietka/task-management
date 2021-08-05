@@ -30,7 +30,4 @@ interface TaskDao {
     @Query("update task set isArchived = :archived where id = :taskId")
     fun changeArchivedStatus(taskId: Int, archived: Boolean): Completable
 
-    @Query("update task set completionTimeInSeconds = :seconds where id = :taskId")
-    fun setCompletionTime(taskId: Int, seconds: Int): Completable
-
 }

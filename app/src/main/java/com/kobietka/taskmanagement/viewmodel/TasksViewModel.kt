@@ -39,13 +39,6 @@ class TasksViewModel
         _taskDate.value = "Due date"
     }
 
-    fun updateTaskCompletionTime(taskId: Int, seconds: Int){
-        taskRepository.setCompletionTime(taskId, seconds)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.io())
-            .subscribe()
-    }
-
     @SuppressLint("CheckResult")
     fun changeTaskStatusToCompleted(taskId: Int){
         compositeDisposable.add(
@@ -81,8 +74,7 @@ class TasksViewModel
                     creationDate = currentDate,
                     dueDate = dueDate,
                     statusId = statusId,
-                    isArchived = false,
-                    completionTimeInSeconds = null
+                    isArchived = false
                 )
             ).observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())

@@ -77,7 +77,6 @@ fun TaskTimeMeasureScreen(taskId: Int, tasksViewModel: TasksViewModel, timeMeasu
                             timerStarted.value = true
                         } else {
                             timeMeasureViewModel.pauseTimer()
-                            tasksViewModel.updateTaskCompletionTime(taskId, time.value)
                             if(switchEnabled.value) tasksViewModel.changeTaskStatusToCompleted(taskId)
                             navController.navigate(Route.projectDetailsRoute(projectId.value)) {
                                 popUpTo(Route.projectDetails) {
