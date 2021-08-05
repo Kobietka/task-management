@@ -13,14 +13,12 @@ import androidx.room.PrimaryKey
         ForeignKey(
             entity = TaskEntity::class,
             parentColumns = arrayOf("id"),
-            childColumns = arrayOf("taskId"),
-            onDelete = CASCADE,
-            onUpdate = CASCADE
+            childColumns = arrayOf("taskId")
         )
     ]
 )
 data class TaskSessionEntity(
-    @PrimaryKey val id: Int?,
+    @PrimaryKey(autoGenerate = true) val id: Int?,
     @ColumnInfo val taskId: Int,
     @ColumnInfo val timeInSeconds: Int,
     @ColumnInfo val date: String
