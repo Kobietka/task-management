@@ -1,15 +1,23 @@
 package com.kobietka.taskmanagement.viewmodel
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.navigation.ActivityNavigatorExtras
+import com.kobietka.taskmanagement.data.TaskSessionEntity
+import com.kobietka.taskmanagement.repository.inter.TaskSessionRepository
 import com.kobietka.taskmanagement.ui.util.Timer
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class TimeMeasureViewModel
-@Inject constructor(): ViewModel() {
+@Inject constructor(private val taskSessionRepository: TaskSessionRepository): ViewModel() {
 
     private val _timeText = MutableLiveData("00:00")
     private val _time = MutableLiveData(0)
@@ -32,6 +40,23 @@ class TimeMeasureViewModel
 
     fun pauseTimer(){
         timer.stop()
+    }
+
+    fun saveSession(taskId: Int, timeInSeconds: Int){
+        val calendar = Calendar.getInstance()
+        val currentDate = "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH)}/${calendar.get(Calendar.YEAR)}"
+
+        taskSessionRepository.insert(
+            TaskSessionEntity(
+                id = null,
+                timeInSeconds = timeInSeconds,
+                date = currentDate,
+                taskId = taskId
+            )
+        ).observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+
     }
 
     private fun convertTime(seconds: Int): String {

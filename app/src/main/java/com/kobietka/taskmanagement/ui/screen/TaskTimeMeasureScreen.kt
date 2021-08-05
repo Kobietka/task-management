@@ -77,6 +77,7 @@ fun TaskTimeMeasureScreen(taskId: Int, tasksViewModel: TasksViewModel, timeMeasu
                             timerStarted.value = true
                         } else {
                             timeMeasureViewModel.pauseTimer()
+                            timeMeasureViewModel.saveSession(taskId, time.value)
                             if(switchEnabled.value) tasksViewModel.changeTaskStatusToCompleted(taskId)
                             navController.navigate(Route.projectDetailsRoute(projectId.value)) {
                                 popUpTo(Route.projectDetails) {
@@ -89,7 +90,7 @@ fun TaskTimeMeasureScreen(taskId: Int, tasksViewModel: TasksViewModel, timeMeasu
                         backgroundColor = MaterialTheme.colors.secondary
                     )
                 ) {
-                    Text(if(timerStarted.value) "Stop" else "Start", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text(if(timerStarted.value) "End session" else "Start session", fontWeight = FontWeight.Bold, fontSize = 15.sp)
                 }
                 
             }
