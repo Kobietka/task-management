@@ -56,10 +56,16 @@ class TimeMeasureViewModel
         ).observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe()
-
     }
 
-    private fun convertTime(seconds: Int): String {
+    fun loadSessions(taskId: Int, onFinish: (List<TaskSessionEntity>) -> Unit){
+        taskSessionRepository.getAllByTaskId(taskId)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe(onFinish)
+    }
+
+    fun convertTime(seconds: Int): String {
         val minutes = seconds/60
         val secondsModulo = seconds%60
         var minutesText = ""
