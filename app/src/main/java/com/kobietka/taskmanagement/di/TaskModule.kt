@@ -52,4 +52,14 @@ class TaskModule {
         return LoadTask(taskRepository = taskRepository)
     }
 
+    @Provides
+    fun provideInsertTask(
+        taskRepository: TaskRepository,
+        dateUtil: DateUtil): InsertTask {
+        return InsertTask(
+            taskRepository = taskRepository,
+            dateUtil = dateUtil
+        )
+    }
+
 }

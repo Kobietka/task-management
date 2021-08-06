@@ -20,14 +20,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TasksViewModel
-@Inject constructor(private val taskRepository: TaskRepository,
-                    private val taskStatusRepository: TaskStatusRepository,
-                    private val dateUtil: DateUtil,
+@Inject constructor(private val taskStatusRepository: TaskStatusRepository,
                     private val updateTask: UpdateTask,
                     private val archiveTask: ArchiveTask,
                     private val completeTask: CompleteTask,
                     private val deleteTask: DeleteTask,
-                    private val loadTask: LoadTask): ViewModel() {
+                    private val loadTask: LoadTask,
+                    private val insertTask: InsertTask): ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -67,22 +66,20 @@ class TasksViewModel
         completeTask.execute(taskId = taskId)
     }
 
-    fun insertTask(projectId: Int, name: String, description: String, statusId: Int, dueDate: String, onFinish: () -> Unit){
-        compositeDisposable.add(
-            taskRepository.insert(
-                TaskEntity(
-                    id = null,
-                    projectId = projectId,
-                    name = name,
-                    description = description,
-                    creationDate = dateUtil.getCurrentDate(),
-                    dueDate = dueDate,
-                    statusId = statusId,
-                    isArchived = false
-                )
-            ).observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(onFinish)
+    fun insertTask(
+        projectId: Int,
+        name: String,
+        description: String,
+        statusId: Int,
+        dueDate: String,
+        onFinish: () -> Unit){
+        insertTask.execute(
+            projectId = projectId,
+            name = name,
+            description = description,
+            statusId = statusId,
+            dueDate = dueDate,
+            onFinish = onFinish
         )
     }
 
