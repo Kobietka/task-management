@@ -9,6 +9,7 @@ import com.kobietka.taskmanagement.data.TaskEntity
 import com.kobietka.taskmanagement.data.TaskStatusEntity
 import com.kobietka.taskmanagement.repository.inter.TaskRepository
 import com.kobietka.taskmanagement.repository.inter.TaskStatusRepository
+import com.kobietka.taskmanagement.ui.util.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -21,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TasksViewModel
 @Inject constructor(private val taskRepository: TaskRepository,
-                    private val taskStatusRepository: TaskStatusRepository): ViewModel() {
+                    private val taskStatusRepository: TaskStatusRepository,
+                    private val dateUtil: DateUtil): ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -61,9 +63,6 @@ class TasksViewModel
     }
 
     fun insertTask(projectId: Int, name: String, description: String, statusId: Int, dueDate: String, onFinish: () -> Unit){
-        val calendar = Calendar.getInstance()
-        val currentDate = "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH)}/${calendar.get(Calendar.YEAR)}"
-
         compositeDisposable.add(
             taskRepository.insert(
                 TaskEntity(
@@ -71,7 +70,7 @@ class TasksViewModel
                     projectId = projectId,
                     name = name,
                     description = description,
-                    creationDate = currentDate,
+                    creationDate = dateUtil.getCurrentDate(),
                     dueDate = dueDate,
                     statusId = statusId,
                     isArchived = false

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.ActivityNavigatorExtras
 import com.kobietka.taskmanagement.data.TaskSessionEntity
 import com.kobietka.taskmanagement.repository.inter.TaskSessionRepository
+import com.kobietka.taskmanagement.ui.util.DateUtil
 import com.kobietka.taskmanagement.ui.util.Timer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TimeMeasureViewModel
-@Inject constructor(private val taskSessionRepository: TaskSessionRepository): ViewModel() {
+@Inject constructor(private val taskSessionRepository: TaskSessionRepository,
+                    private val dateUtil: DateUtil): ViewModel() {
 
     private val _timeText = MutableLiveData("00:00")
     private val _time = MutableLiveData(0)
@@ -48,14 +50,11 @@ class TimeMeasureViewModel
     }
 
     fun saveSession(taskId: Int, timeInSeconds: Int){
-        val calendar = Calendar.getInstance()
-        val currentDate = "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH)}/${calendar.get(Calendar.YEAR)}"
-
         taskSessionRepository.insert(
             TaskSessionEntity(
                 id = null,
                 timeInSeconds = timeInSeconds,
-                date = currentDate,
+                date = dateUtil.getCurrentDate(),
                 taskId = taskId
             )
         ).observeOn(AndroidSchedulers.mainThread())
@@ -70,7 +69,7 @@ class TimeMeasureViewModel
             .subscribe(onFinish)
     }
 
-    fun convertTime(seconds: Int): String {
+    private fun convertTime(seconds: Int): String {
         val minutes = seconds/60
         val secondsModulo = seconds%60
         var minutesText = ""
