@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.kobietka.taskmanagement.data.entity.TaskEntity
 import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
 import com.kobietka.taskmanagement.domain.usecase.task.ArchiveTask
+import com.kobietka.taskmanagement.domain.usecase.task.CompleteTask
 import com.kobietka.taskmanagement.domain.usecase.task.UpdateTask
 import com.kobietka.taskmanagement.repository.inter.TaskRepository
 import com.kobietka.taskmanagement.repository.inter.TaskStatusRepository
@@ -25,7 +26,8 @@ class TasksViewModel
                     private val taskStatusRepository: TaskStatusRepository,
                     private val dateUtil: DateUtil,
                     private val updateTask: UpdateTask,
-                    private val archiveTask: ArchiveTask): ViewModel() {
+                    private val archiveTask: ArchiveTask,
+                    private val completeTask: CompleteTask): ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -61,25 +63,8 @@ class TasksViewModel
        )
     }
 
-    @SuppressLint("CheckResult")
     fun changeTaskStatusToCompleted(taskId: Int){
-        compositeDisposable.add(
-            taskStatusRepository.getAll()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe { statuses ->
-                    val status = statuses.first { status -> status.name == "Completed" }
-                    taskRepository.getById(taskId)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .subscribe { taskEntity ->
-                            taskRepository.insert(taskEntity.copy(statusId = status.id!!))
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribeOn(Schedulers.io())
-                                .subscribe()
-                        }
-                }
-        )
+        completeTask.execute(taskId = taskId)
     }
 
     fun insertTask(projectId: Int, name: String, description: String, statusId: Int, dueDate: String, onFinish: () -> Unit){
