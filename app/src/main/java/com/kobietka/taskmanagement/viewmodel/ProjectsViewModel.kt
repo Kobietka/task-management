@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.kobietka.taskmanagement.data.entity.ProjectEntity
 import com.kobietka.taskmanagement.data.entity.TaskEntity
 import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
+import com.kobietka.taskmanagement.domain.usecase.project.InsertProject
 import com.kobietka.taskmanagement.domain.usecase.taskstatus.LoadTaskStatus
 import com.kobietka.taskmanagement.repository.inter.ProjectRepository
 import com.kobietka.taskmanagement.repository.inter.TaskRepository
@@ -20,16 +21,16 @@ import javax.inject.Inject
 class ProjectsViewModel
 @Inject constructor(private val projectRepository: ProjectRepository,
                     private val taskRepository: TaskRepository,
-                    private val loadTaskStatus: LoadTaskStatus): ViewModel() {
+                    private val loadTaskStatus: LoadTaskStatus,
+                    private val insertProject: InsertProject): ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
     fun insertProject(name: String, description: String, onFinish: () -> Unit){
-        compositeDisposable.add(
-            projectRepository.insert(ProjectEntity(null, name, description))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(onFinish)
+        insertProject.execute(
+            name = name,
+            description = description,
+            onFinish = onFinish
         )
     }
 
