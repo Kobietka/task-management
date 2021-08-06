@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.kobietka.taskmanagement.data.entity.TaskEntity
 import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
 import com.kobietka.taskmanagement.domain.usecase.task.*
+import com.kobietka.taskmanagement.domain.usecase.taskstatus.LoadTaskStatuses
 import com.kobietka.taskmanagement.repository.inter.TaskRepository
 import com.kobietka.taskmanagement.repository.inter.TaskStatusRepository
 import com.kobietka.taskmanagement.ui.util.DateUtil
@@ -20,15 +21,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TasksViewModel
-@Inject constructor(private val taskStatusRepository: TaskStatusRepository,
+@Inject constructor(private val loadTaskStatuses: LoadTaskStatuses,
                     private val updateTask: UpdateTask,
                     private val archiveTask: ArchiveTask,
                     private val completeTask: CompleteTask,
                     private val deleteTask: DeleteTask,
                     private val loadTask: LoadTask,
                     private val insertTask: InsertTask): ViewModel() {
-
-    private val compositeDisposable = CompositeDisposable()
 
     private val _taskDate = MutableLiveData("Due date")
 
@@ -105,12 +104,7 @@ class TasksViewModel
     }
 
     fun loadTaskStatuses(onFinish: (List<TaskStatusEntity>) -> Unit){
-        compositeDisposable.add(
-            taskStatusRepository.getAll()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(onFinish)
-        )
+        loadTaskStatuses.execute(onFinish = onFinish)
     }
 
 }
