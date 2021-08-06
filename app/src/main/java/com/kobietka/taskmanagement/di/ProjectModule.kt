@@ -1,9 +1,6 @@
 package com.kobietka.taskmanagement.di
 
-import com.kobietka.taskmanagement.domain.usecase.project.DeleteProject
-import com.kobietka.taskmanagement.domain.usecase.project.InsertProject
-import com.kobietka.taskmanagement.domain.usecase.project.LoadProjectWithTasks
-import com.kobietka.taskmanagement.domain.usecase.project.UpdateProject
+import com.kobietka.taskmanagement.domain.usecase.project.*
 import com.kobietka.taskmanagement.repository.inter.ProjectRepository
 import com.kobietka.taskmanagement.repository.inter.TaskRepository
 import dagger.Module
@@ -40,6 +37,11 @@ class ProjectModule {
             projectRepository = projectRepository,
             taskRepository = taskRepository
         )
+    }
+
+    @Provides
+    fun provideLoadProject(projectRepository: ProjectRepository): LoadProject {
+        return LoadProject(projectRepository = projectRepository)
     }
 
 }

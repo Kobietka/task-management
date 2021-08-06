@@ -5,10 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.kobietka.taskmanagement.data.entity.ProjectEntity
 import com.kobietka.taskmanagement.data.entity.TaskEntity
 import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
-import com.kobietka.taskmanagement.domain.usecase.project.DeleteProject
-import com.kobietka.taskmanagement.domain.usecase.project.InsertProject
-import com.kobietka.taskmanagement.domain.usecase.project.LoadProjectWithTasks
-import com.kobietka.taskmanagement.domain.usecase.project.UpdateProject
+import com.kobietka.taskmanagement.domain.usecase.project.*
 import com.kobietka.taskmanagement.domain.usecase.taskstatus.LoadTaskStatus
 import com.kobietka.taskmanagement.repository.inter.ProjectRepository
 import com.kobietka.taskmanagement.repository.inter.TaskRepository
@@ -21,15 +18,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProjectsViewModel
-@Inject constructor(private val projectRepository: ProjectRepository,
-                    private val taskRepository: TaskRepository,
-                    private val loadTaskStatus: LoadTaskStatus,
+@Inject constructor(private val loadTaskStatus: LoadTaskStatus,
                     private val insertProject: InsertProject,
                     private val updateProject: UpdateProject,
                     private val deleteProject: DeleteProject,
-                    private val loadProjectWithTasks: LoadProjectWithTasks): ViewModel() {
-
-    private val compositeDisposable = CompositeDisposable()
+                    private val loadProjectWithTasks: LoadProjectWithTasks,
+                    private val loadProject: LoadProject): ViewModel() {
 
     fun insertProject(name: String, description: String, onFinish: () -> Unit){
         insertProject.execute(
@@ -60,7 +54,10 @@ class ProjectsViewModel
         )
     }
 
-    fun loadProjectWithTasks(projectId: Int, onFinish: (ProjectEntity, List<TaskEntity>) -> Unit){
+    fun loadProjectWithTasks(
+        projectId: Int,
+        onFinish: (ProjectEntity, List<TaskEntity>) -> Unit
+    ){
         loadProjectWithTasks.execute(
             projectId = projectId,
             onFinish = onFinish
@@ -68,11 +65,9 @@ class ProjectsViewModel
     }
 
     fun loadProject(id: Int, onFinish: (ProjectEntity) -> Unit){
-        compositeDisposable.add(
-            projectRepository.getById(id)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(onFinish)
+        loadProject.execute(
+            id = id,
+            onFinish = onFinish
         )
     }
 
