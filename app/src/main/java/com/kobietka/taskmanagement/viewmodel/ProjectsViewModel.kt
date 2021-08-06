@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.kobietka.taskmanagement.data.entity.ProjectEntity
 import com.kobietka.taskmanagement.data.entity.TaskEntity
 import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
+import com.kobietka.taskmanagement.domain.usecase.taskstatus.LoadTaskStatus
 import com.kobietka.taskmanagement.repository.inter.ProjectRepository
 import com.kobietka.taskmanagement.repository.inter.TaskRepository
 import com.kobietka.taskmanagement.repository.inter.TaskStatusRepository
@@ -19,7 +20,7 @@ import javax.inject.Inject
 class ProjectsViewModel
 @Inject constructor(private val projectRepository: ProjectRepository,
                     private val taskRepository: TaskRepository,
-                    private val taskStatusRepository: TaskStatusRepository): ViewModel() {
+                    private val loadTaskStatus: LoadTaskStatus): ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -77,14 +78,7 @@ class ProjectsViewModel
     }
 
     fun loadTaskStatus(statusId: Int, onFinish: (TaskStatusEntity) -> Unit){
-        compositeDisposable.add(
-            taskStatusRepository.getById(statusId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe { taskStatus ->
-                    onFinish(taskStatus)
-                }
-        )
+        loadTaskStatus.execute(statusId = statusId, onFinish = onFinish)
     }
 
 }
