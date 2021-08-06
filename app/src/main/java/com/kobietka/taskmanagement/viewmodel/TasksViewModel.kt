@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kobietka.taskmanagement.data.entity.TaskEntity
 import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
+import com.kobietka.taskmanagement.domain.usecase.task.UpdateTask
 import com.kobietka.taskmanagement.repository.inter.TaskRepository
 import com.kobietka.taskmanagement.repository.inter.TaskStatusRepository
 import com.kobietka.taskmanagement.ui.util.DateUtil
@@ -21,7 +22,9 @@ import javax.inject.Inject
 class TasksViewModel
 @Inject constructor(private val taskRepository: TaskRepository,
                     private val taskStatusRepository: TaskStatusRepository,
-                    private val dateUtil: DateUtil): ViewModel() {
+                    private val dateUtil: DateUtil,
+                    private val updateTask: UpdateTask
+): ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -37,6 +40,24 @@ class TasksViewModel
 
     fun clearDate(){
         _taskDate.value = "Due date"
+    }
+
+    fun updateTask(
+        oldTaskEntity: TaskEntity,
+        name: String,
+        description: String,
+        newStatusId: Int,
+        dueDate: String,
+        onFinish: () -> Unit
+    ){
+       updateTask.execute(
+           oldTaskEntity = oldTaskEntity,
+           name = name,
+           description = description,
+           newStatusId = newStatusId,
+           dueDate = dueDate,
+           onFinish = onFinish
+       )
     }
 
     @SuppressLint("CheckResult")

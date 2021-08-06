@@ -199,13 +199,12 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
                         .padding(top = 10.dp),
                     onClick = {
                         if(name.value.text.isNotBlank() && description.value.text.isNotBlank() && statusId.value != -1 && dateText.value != "Due date"){
-                            tasksViewModel.insertTask(
-                                taskEntity = task.value!!.copy(
-                                    name = name.value.text,
-                                    description = description.value.text,
-                                    statusId = statusId.value,
-                                    dueDate = dateText.value
-                                ),
+                            tasksViewModel.updateTask(
+                                oldTaskEntity = task.value!!,
+                                name = name.value.text,
+                                description = description.value.text,
+                                newStatusId = statusId.value,
+                                dueDate = dateText.value,
                                 onFinish = {
                                     navController.navigate(Route.projectDetailsRoute(projectId.value)){
                                         popUpTo(Route.projectDetails){
