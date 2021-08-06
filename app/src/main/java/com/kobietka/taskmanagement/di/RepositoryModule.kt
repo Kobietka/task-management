@@ -1,17 +1,8 @@
 package com.kobietka.taskmanagement.di
 
-import com.kobietka.taskmanagement.data.ProjectDao
-import com.kobietka.taskmanagement.data.TaskDao
-import com.kobietka.taskmanagement.data.TaskSessionDao
-import com.kobietka.taskmanagement.data.TaskStatusDao
-import com.kobietka.taskmanagement.repository.impl.ProjectRepositoryImpl
-import com.kobietka.taskmanagement.repository.impl.TaskRepositoryImpl
-import com.kobietka.taskmanagement.repository.impl.TaskSessionRepositoryImpl
-import com.kobietka.taskmanagement.repository.impl.TaskStatusRepositoryImpl
-import com.kobietka.taskmanagement.repository.inter.ProjectRepository
-import com.kobietka.taskmanagement.repository.inter.TaskRepository
-import com.kobietka.taskmanagement.repository.inter.TaskSessionRepository
-import com.kobietka.taskmanagement.repository.inter.TaskStatusRepository
+import com.kobietka.taskmanagement.data.*
+import com.kobietka.taskmanagement.repository.impl.*
+import com.kobietka.taskmanagement.repository.inter.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,6 +36,12 @@ class RepositoryModule {
     @Singleton
     fun provideTaskSessionRepository(taskSessionDao: TaskSessionDao): TaskSessionRepository {
         return TaskSessionRepositoryImpl(taskSessionDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStatusEventRepository(statusEventDao: StatusEventDao): StatusEventRepository {
+        return StatusEventRepositoryImpl(statusEventDao)
     }
 
 }
