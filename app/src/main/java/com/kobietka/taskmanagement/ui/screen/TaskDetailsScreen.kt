@@ -94,12 +94,16 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
                     .height(35.dp)
                     .width(35.dp)
                     .clickable {
-                        tasksViewModel.archiveTask(taskId)
-                        navController.navigate(Route.projectDetailsRoute(projectId.value)) {
-                            popUpTo(Route.projectDetails) {
-                                inclusive = true
+                        tasksViewModel.archiveTask(
+                            taskId = taskId,
+                            onFinish = {
+                                navController.navigate(Route.projectDetailsRoute(projectId.value)) {
+                                    popUpTo(Route.projectDetails) {
+                                        inclusive = true
+                                    }
+                                }
                             }
-                        }
+                        )
                     },
                 imageVector = Icons.Filled.Archive,
                 contentDescription = "archive task"
