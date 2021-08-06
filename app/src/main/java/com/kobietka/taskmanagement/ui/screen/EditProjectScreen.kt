@@ -121,14 +121,13 @@ fun EditProjectScreen(projectId: Int, projectsViewModel: ProjectsViewModel, navC
                         .padding(top = 10.dp),
                     onClick = {
                         if(!nameError.value && !descriptionError.value){
-                            projectsViewModel.insertProject(
-                                projectEntity = project.value!!.copy(
-                                    name = name.value.text,
-                                    description = description.value.text
-                                ),
+                            projectsViewModel.updateProject(
+                                oldProjectEntity = project.value!!,
+                                name = name.value.text,
+                                description = description.value.text,
                                 onFinish = {
-                                    navController.navigate(Route.main){
-                                        popUpTo(Route.createProject){
+                                    navController.navigate(Route.main) {
+                                        popUpTo(Route.createProject) {
                                             inclusive = true
                                         }
                                     }
