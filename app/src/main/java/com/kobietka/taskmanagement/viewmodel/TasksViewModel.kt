@@ -7,10 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kobietka.taskmanagement.data.entity.TaskEntity
 import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
-import com.kobietka.taskmanagement.domain.usecase.task.ArchiveTask
-import com.kobietka.taskmanagement.domain.usecase.task.CompleteTask
-import com.kobietka.taskmanagement.domain.usecase.task.DeleteTask
-import com.kobietka.taskmanagement.domain.usecase.task.UpdateTask
+import com.kobietka.taskmanagement.domain.usecase.task.*
 import com.kobietka.taskmanagement.repository.inter.TaskRepository
 import com.kobietka.taskmanagement.repository.inter.TaskStatusRepository
 import com.kobietka.taskmanagement.ui.util.DateUtil
@@ -29,7 +26,8 @@ class TasksViewModel
                     private val updateTask: UpdateTask,
                     private val archiveTask: ArchiveTask,
                     private val completeTask: CompleteTask,
-                    private val deleteTask: DeleteTask): ViewModel() {
+                    private val deleteTask: DeleteTask,
+                    private val loadTask: LoadTask): ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -103,11 +101,9 @@ class TasksViewModel
     }
 
     fun loadTask(taskId: Int, onFinish: (TaskEntity) -> Unit){
-        compositeDisposable.add(
-            taskRepository.getById(taskId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(onFinish)
+        loadTask.execute(
+            taskId = taskId,
+            onFinish = onFinish
         )
     }
 
