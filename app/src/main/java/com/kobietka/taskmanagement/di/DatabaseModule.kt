@@ -59,6 +59,11 @@ class DatabaseModule {
         return database.taskSessionDao()
     }
 
+    @Provides
+    fun provideStatusEventDao(database: Database): StatusEventDao {
+        return database.statusEventDao()
+    }
+
 }
 
 
