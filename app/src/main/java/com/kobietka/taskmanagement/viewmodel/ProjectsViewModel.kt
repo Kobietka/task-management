@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.kobietka.taskmanagement.data.entity.ProjectEntity
 import com.kobietka.taskmanagement.data.entity.TaskEntity
 import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
+import com.kobietka.taskmanagement.domain.usecase.project.DeleteProject
 import com.kobietka.taskmanagement.domain.usecase.project.InsertProject
 import com.kobietka.taskmanagement.domain.usecase.project.UpdateProject
 import com.kobietka.taskmanagement.domain.usecase.taskstatus.LoadTaskStatus
@@ -23,7 +24,8 @@ class ProjectsViewModel
                     private val taskRepository: TaskRepository,
                     private val loadTaskStatus: LoadTaskStatus,
                     private val insertProject: InsertProject,
-                    private val updateProject: UpdateProject): ViewModel() {
+                    private val updateProject: UpdateProject,
+                    private val deleteProject: DeleteProject): ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -50,11 +52,9 @@ class ProjectsViewModel
     }
 
     fun deleteProject(projectId: Int, onFinish: () -> Unit){
-        compositeDisposable.add(
-            projectRepository.deleteById(projectId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(onFinish)
+        deleteProject.execute(
+            projectId = projectId,
+            onFinish = onFinish
         )
     }
 
