@@ -35,18 +35,20 @@ class UpdateTask
         ).observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe {
-                statusEventRepository.insert(
-                    statusEventEntity = StatusEventEntity(
-                        id = null,
-                        taskId = oldTaskEntity.id!!,
-                        fromStatus = oldTaskEntity.statusId,
-                        toStatus = newStatusId,
-                        projectId = oldTaskEntity.projectId,
-                        date = dateUtil.getCurrentDate()
-                    )
-                ).observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(onFinish)
+                if(newStatusId != oldTaskEntity.statusId){
+                    statusEventRepository.insert(
+                        statusEventEntity = StatusEventEntity(
+                            id = null,
+                            taskId = oldTaskEntity.id!!,
+                            fromStatus = oldTaskEntity.statusId,
+                            toStatus = newStatusId,
+                            projectId = oldTaskEntity.projectId,
+                            date = dateUtil.getCurrentDate()
+                        )
+                    ).observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(onFinish)
+                } else onFinish()
             }
     }
 

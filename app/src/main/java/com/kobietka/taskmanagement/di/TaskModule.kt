@@ -35,10 +35,14 @@ class TaskModule {
     @Provides
     fun provideCompleteTask(
         taskRepository: TaskRepository,
-        taskStatusRepository: TaskStatusRepository) : CompleteTask {
+        taskStatusRepository: TaskStatusRepository,
+        statusEventRepository: StatusEventRepository,
+        dateUtil: DateUtil) : CompleteTask {
         return CompleteTask(
             taskRepository = taskRepository,
-            taskStatusRepository = taskStatusRepository
+            taskStatusRepository = taskStatusRepository,
+            statusEventRepository = statusEventRepository,
+            dateUtil = dateUtil
         )
     }
 
