@@ -114,12 +114,16 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
                     .height(35.dp)
                     .width(35.dp)
                     .clickable {
-                        tasksViewModel.deleteTask(taskId)
-                        navController.navigate(Route.projectDetailsRoute(projectId.value)) {
-                            popUpTo(Route.projectDetails) {
-                                inclusive = true
+                        tasksViewModel.deleteTask(
+                            taskId = taskId,
+                            onFinish = {
+                                navController.navigate(Route.projectDetailsRoute(projectId.value)) {
+                                    popUpTo(Route.projectDetails) {
+                                        inclusive = true
+                                    }
+                                }
                             }
-                        }
+                        )
                     },
                 imageVector = Icons.Filled.Delete,
                 contentDescription = "delete task"

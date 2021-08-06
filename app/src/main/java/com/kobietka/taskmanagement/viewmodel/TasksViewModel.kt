@@ -9,6 +9,7 @@ import com.kobietka.taskmanagement.data.entity.TaskEntity
 import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
 import com.kobietka.taskmanagement.domain.usecase.task.ArchiveTask
 import com.kobietka.taskmanagement.domain.usecase.task.CompleteTask
+import com.kobietka.taskmanagement.domain.usecase.task.DeleteTask
 import com.kobietka.taskmanagement.domain.usecase.task.UpdateTask
 import com.kobietka.taskmanagement.repository.inter.TaskRepository
 import com.kobietka.taskmanagement.repository.inter.TaskStatusRepository
@@ -27,7 +28,8 @@ class TasksViewModel
                     private val dateUtil: DateUtil,
                     private val updateTask: UpdateTask,
                     private val archiveTask: ArchiveTask,
-                    private val completeTask: CompleteTask): ViewModel() {
+                    private val completeTask: CompleteTask,
+                    private val deleteTask: DeleteTask): ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -93,11 +95,11 @@ class TasksViewModel
         )
     }
 
-    fun deleteTask(taskId: Int){
-        taskRepository.deleteById(taskId)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.io())
-            .subscribe()
+    fun deleteTask(taskId: Int, onFinish: () -> Unit){
+        deleteTask.execute(
+            taskId = taskId,
+            onFinish = onFinish
+        )
     }
 
     fun loadTask(taskId: Int, onFinish: (TaskEntity) -> Unit){

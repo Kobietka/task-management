@@ -2,6 +2,7 @@ package com.kobietka.taskmanagement.di
 
 import com.kobietka.taskmanagement.domain.usecase.task.ArchiveTask
 import com.kobietka.taskmanagement.domain.usecase.task.CompleteTask
+import com.kobietka.taskmanagement.domain.usecase.task.DeleteTask
 import com.kobietka.taskmanagement.domain.usecase.task.UpdateTask
 import com.kobietka.taskmanagement.repository.inter.StatusEventRepository
 import com.kobietka.taskmanagement.repository.inter.TaskRepository
@@ -42,6 +43,11 @@ class TaskModule {
             taskRepository = taskRepository,
             taskStatusRepository = taskStatusRepository
         )
+    }
+
+    @Provides
+    fun provideDeleteTask(taskRepository: TaskRepository) : DeleteTask {
+        return DeleteTask(taskRepository = taskRepository)
     }
 
 }
