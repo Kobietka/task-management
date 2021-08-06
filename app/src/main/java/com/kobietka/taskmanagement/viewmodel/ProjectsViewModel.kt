@@ -7,6 +7,7 @@ import com.kobietka.taskmanagement.data.entity.TaskEntity
 import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
 import com.kobietka.taskmanagement.domain.usecase.project.DeleteProject
 import com.kobietka.taskmanagement.domain.usecase.project.InsertProject
+import com.kobietka.taskmanagement.domain.usecase.project.LoadProjectWithTasks
 import com.kobietka.taskmanagement.domain.usecase.project.UpdateProject
 import com.kobietka.taskmanagement.domain.usecase.taskstatus.LoadTaskStatus
 import com.kobietka.taskmanagement.repository.inter.ProjectRepository
@@ -25,7 +26,8 @@ class ProjectsViewModel
                     private val loadTaskStatus: LoadTaskStatus,
                     private val insertProject: InsertProject,
                     private val updateProject: UpdateProject,
-                    private val deleteProject: DeleteProject): ViewModel() {
+                    private val deleteProject: DeleteProject,
+                    private val loadProjectWithTasks: LoadProjectWithTasks): ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -58,20 +60,10 @@ class ProjectsViewModel
         )
     }
 
-    @SuppressLint("CheckResult")
-    fun loadProjectWithTasks(id: Int, onFinish: (ProjectEntity, List<TaskEntity>) -> Unit){
-        compositeDisposable.add(
-            projectRepository.getById(id)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe { project ->
-                    taskRepository.getAllByProjectId(project.id!!)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .subscribe { tasks ->
-                            onFinish(project, tasks)
-                        }
-                }
+    fun loadProjectWithTasks(projectId: Int, onFinish: (ProjectEntity, List<TaskEntity>) -> Unit){
+        loadProjectWithTasks.execute(
+            projectId = projectId,
+            onFinish = onFinish
         )
     }
 

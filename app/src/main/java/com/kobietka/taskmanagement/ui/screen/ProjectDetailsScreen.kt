@@ -58,7 +58,7 @@ fun ProjectDetailsScreen(projectId: Int, projectsViewModel: ProjectsViewModel, n
 
     if(firstTime.value){
         projectsViewModel.loadProjectWithTasks(
-            id = projectId,
+            projectId = projectId,
             onFinish = { project, projectTasks ->
                 name.value = project.name
                 description.value = project.description
