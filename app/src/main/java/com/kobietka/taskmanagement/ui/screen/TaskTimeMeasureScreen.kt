@@ -33,6 +33,7 @@ import com.kobietka.taskmanagement.viewmodel.TimeMeasureViewModel
 @ExperimentalAnimationApi
 @Composable
 fun TaskTimeMeasureScreen(taskId: Int, tasksViewModel: TasksViewModel, timeMeasureViewModel: TimeMeasureViewModel, navController: NavController){
+    val firstTime = remember { mutableStateOf(true) }
     val taskName = remember { mutableStateOf("") }
     val projectId = remember { mutableStateOf(0) }
     val timeText = timeMeasureViewModel.timeText().observeAsState(initial = "00:00")
@@ -43,6 +44,11 @@ fun TaskTimeMeasureScreen(taskId: Int, tasksViewModel: TasksViewModel, timeMeasu
     val sessions = remember { mutableStateOf<List<TaskSessionEntity>>(listOf()) }
 
     val switchEnabled = remember { mutableStateOf(true) }
+
+    if(firstTime.value){
+        timeMeasureViewModel.resetTimer()
+        firstTime.value = false
+    }
 
     tasksViewModel.loadTask(
         taskId = taskId,

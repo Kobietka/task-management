@@ -38,6 +38,11 @@ class TimeMeasureViewModel
         timer.start()
     }
 
+    fun resetTimer(){
+        _timeText.value = convertTime(0)
+        timer.stop()
+    }
+
     fun pauseTimer(){
         timer.stop()
     }

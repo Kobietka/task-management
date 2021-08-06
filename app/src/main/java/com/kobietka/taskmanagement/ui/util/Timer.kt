@@ -16,8 +16,10 @@ class Timer {
             while(timerRunning){
                 delay(1000)
                 timePassed++
-                withContext(Dispatchers.Main){
-                    tick(timePassed)
+                if(timerRunning){
+                    withContext(Dispatchers.Main){
+                        tick(timePassed)
+                    }
                 }
             }
         }
