@@ -1,12 +1,11 @@
 package com.kobietka.taskmanagement.repository.impl
 
-import com.kobietka.taskmanagement.data.ProjectDao
-import com.kobietka.taskmanagement.data.ProjectEntity
+import com.kobietka.taskmanagement.data.dao.ProjectDao
+import com.kobietka.taskmanagement.data.entity.ProjectEntity
 import com.kobietka.taskmanagement.repository.inter.ProjectRepository
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
-import io.reactivex.Single
 import javax.inject.Inject
 
 

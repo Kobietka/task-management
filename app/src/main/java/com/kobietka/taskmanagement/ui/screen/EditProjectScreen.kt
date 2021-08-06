@@ -20,7 +20,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.kobietka.taskmanagement.data.ProjectEntity
+import com.kobietka.taskmanagement.data.entity.ProjectEntity
 import com.kobietka.taskmanagement.ui.util.MultiLineTextField
 import com.kobietka.taskmanagement.ui.util.NormalTextField
 import com.kobietka.taskmanagement.ui.util.Route

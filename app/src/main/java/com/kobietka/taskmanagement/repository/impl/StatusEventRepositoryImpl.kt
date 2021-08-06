@@ -1,7 +1,7 @@
 package com.kobietka.taskmanagement.repository.impl
 
-import com.kobietka.taskmanagement.data.StatusEventDao
-import com.kobietka.taskmanagement.data.StatusEventEntity
+import com.kobietka.taskmanagement.data.dao.StatusEventDao
+import com.kobietka.taskmanagement.data.entity.StatusEventEntity
 import com.kobietka.taskmanagement.repository.inter.StatusEventRepository
 import io.reactivex.Completable
 import io.reactivex.Maybe

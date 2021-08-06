@@ -2,8 +2,9 @@ package com.kobietka.taskmanagement.di
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import com.kobietka.taskmanagement.data.*
+import com.kobietka.taskmanagement.data.dao.*
+import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

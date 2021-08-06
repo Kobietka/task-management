@@ -1,9 +1,5 @@
 package com.kobietka.taskmanagement.ui.screen
 
-import android.app.Activity
-import android.widget.DatePicker
-import androidx.activity.ComponentActivity
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,8 +20,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.google.android.material.datepicker.MaterialDatePicker
-import com.kobietka.taskmanagement.data.TaskStatusEntity
+import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
 import com.kobietka.taskmanagement.ui.util.MultiLineTextField
 import com.kobietka.taskmanagement.ui.util.NormalTextField
 import com.kobietka.taskmanagement.ui.util.Route

@@ -1,11 +1,10 @@
 package com.kobietka.taskmanagement.viewmodel
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.kobietka.taskmanagement.data.ProjectEntity
+import com.kobietka.taskmanagement.data.entity.ProjectEntity
 import com.kobietka.taskmanagement.domain.model.ProjectData
 import com.kobietka.taskmanagement.repository.inter.ProjectRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

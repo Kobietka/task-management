@@ -1,19 +1,15 @@
 package com.kobietka.taskmanagement.viewmodel
 
-import android.annotation.SuppressLint
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.navigation.ActivityNavigatorExtras
-import com.kobietka.taskmanagement.data.TaskSessionEntity
+import com.kobietka.taskmanagement.data.entity.TaskSessionEntity
 import com.kobietka.taskmanagement.repository.inter.TaskSessionRepository
 import com.kobietka.taskmanagement.ui.util.DateUtil
 import com.kobietka.taskmanagement.ui.util.Timer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel

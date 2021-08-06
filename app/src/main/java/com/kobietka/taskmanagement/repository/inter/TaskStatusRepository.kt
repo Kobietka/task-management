@@ -1,6 +1,6 @@
 package com.kobietka.taskmanagement.repository.inter
 
-import com.kobietka.taskmanagement.data.TaskStatusEntity
+import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable

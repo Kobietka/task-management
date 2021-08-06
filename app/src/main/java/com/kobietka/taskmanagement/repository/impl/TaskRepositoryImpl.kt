@@ -1,7 +1,7 @@
 package com.kobietka.taskmanagement.repository.impl
 
-import com.kobietka.taskmanagement.data.TaskDao
-import com.kobietka.taskmanagement.data.TaskEntity
+import com.kobietka.taskmanagement.data.dao.TaskDao
+import com.kobietka.taskmanagement.data.entity.TaskEntity
 import com.kobietka.taskmanagement.repository.inter.TaskRepository
 import io.reactivex.Completable
 import io.reactivex.Maybe

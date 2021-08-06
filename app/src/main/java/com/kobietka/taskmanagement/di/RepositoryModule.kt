@@ -1,6 +1,6 @@
 package com.kobietka.taskmanagement.di
 
-import com.kobietka.taskmanagement.data.*
+import com.kobietka.taskmanagement.data.dao.*
 import com.kobietka.taskmanagement.repository.impl.*
 import com.kobietka.taskmanagement.repository.inter.*
 import dagger.Module

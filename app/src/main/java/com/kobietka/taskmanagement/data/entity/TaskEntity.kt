@@ -1,4 +1,4 @@
-package com.kobietka.taskmanagement.data
+package com.kobietka.taskmanagement.data.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

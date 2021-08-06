@@ -2,6 +2,8 @@ package com.kobietka.taskmanagement.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.kobietka.taskmanagement.data.dao.*
+import com.kobietka.taskmanagement.data.entity.*
 
 @Database(
     entities = [

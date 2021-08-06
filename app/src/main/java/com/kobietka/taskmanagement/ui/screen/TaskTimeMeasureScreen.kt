@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -23,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.kobietka.taskmanagement.data.TaskSessionEntity
+import com.kobietka.taskmanagement.data.entity.TaskSessionEntity
 import com.kobietka.taskmanagement.ui.theme.indigo
 import com.kobietka.taskmanagement.ui.util.Route
 import com.kobietka.taskmanagement.viewmodel.TasksViewModel

@@ -1,6 +1,6 @@
 package com.kobietka.taskmanagement.repository.inter
 
-import com.kobietka.taskmanagement.data.TaskSessionEntity
+import com.kobietka.taskmanagement.data.entity.TaskSessionEntity
 import io.reactivex.Completable
 import io.reactivex.Maybe
 

@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
@@ -28,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.kobietka.taskmanagement.data.ProjectEntity
+import com.kobietka.taskmanagement.data.entity.ProjectEntity
 import com.kobietka.taskmanagement.ui.util.Route
 import com.kobietka.taskmanagement.viewmodel.MainViewModel
 

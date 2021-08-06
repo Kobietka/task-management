@@ -1,9 +1,10 @@
-package com.kobietka.taskmanagement.data
+package com.kobietka.taskmanagement.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.kobietka.taskmanagement.data.entity.TaskEntity
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable

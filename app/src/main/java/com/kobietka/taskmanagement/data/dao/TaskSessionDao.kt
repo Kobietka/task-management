@@ -1,8 +1,9 @@
-package com.kobietka.taskmanagement.data
+package com.kobietka.taskmanagement.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.kobietka.taskmanagement.data.entity.TaskSessionEntity
 import io.reactivex.Completable
 import io.reactivex.Maybe
 
