@@ -29,19 +29,19 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kobietka.taskmanagement.data.entity.ProjectEntity
 import com.kobietka.taskmanagement.ui.util.Route
-import com.kobietka.taskmanagement.viewmodel.MainViewModel
+import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
 
 
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
-fun MainScreen(mainViewModel: MainViewModel, navController: NavController){
+fun MainScreen(projectsViewModel: ProjectsViewModel, navController: NavController){
     val projects = remember { mutableStateOf<List<ProjectEntity>>(listOf()) }
     val lazyColumnState = rememberLazyListState()
     val topAppBarVisible = remember { mutableStateOf(true) }
     val infoVisible = remember { mutableStateOf(false) }
 
-    mainViewModel.loadProjects {
+    projectsViewModel.loadProjects {
         projects.value = it
     }
 
