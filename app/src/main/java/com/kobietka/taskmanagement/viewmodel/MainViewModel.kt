@@ -19,11 +19,6 @@ class MainViewModel
 @Inject constructor(private val projectRepository: ProjectRepository): ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
-    private val _projects = MutableLiveData<List<ProjectData>>(listOf())
-
-    fun projects(): LiveData<List<ProjectData>> {
-        return _projects
-    }
 
     fun loadProjects(onFinish: (List<ProjectEntity>) -> Unit){
         compositeDisposable.add(
@@ -31,29 +26,6 @@ class MainViewModel
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(onFinish)
-        )
-    }
-
-    @SuppressLint("CheckResult")
-    fun loadData(){
-        compositeDisposable.add(
-            projectRepository.getAll()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe { projects ->
-                    val projectsData = mutableListOf<ProjectData>()
-                    projects.forEachIndexed { index, projectEntity ->
-                        projectRepository.getNumberOfTasksInProject(projectEntity.id!!)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeOn(Schedulers.io())
-                            .subscribe { numberOfTasks ->
-                                projectsData.add(ProjectData(projectEntity, numberOfTasks))
-                                if(index == projects.size - 1){
-                                    _projects.value = projectsData
-                                }
-                            }
-                    }
-                }
         )
     }
 

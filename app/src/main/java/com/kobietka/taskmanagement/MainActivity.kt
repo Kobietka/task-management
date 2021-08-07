@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mainViewModel.loadData()
+        //mainViewModel.loadData()
 
         setContent {
             val navController = rememberNavController()
