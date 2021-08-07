@@ -44,4 +44,9 @@ class ProjectModule {
         return LoadProject(projectRepository = projectRepository)
     }
 
+    @Provides
+    fun provideLoadProjects(projectRepository: ProjectRepository): LoadProjects {
+        return LoadProjects(projectRepository = projectRepository)
+    }
+
 }

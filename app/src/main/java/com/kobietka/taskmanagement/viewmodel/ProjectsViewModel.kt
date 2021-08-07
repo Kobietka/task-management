@@ -23,7 +23,8 @@ class ProjectsViewModel
                     private val updateProject: UpdateProject,
                     private val deleteProject: DeleteProject,
                     private val loadProjectWithTasks: LoadProjectWithTasks,
-                    private val loadProject: LoadProject): ViewModel() {
+                    private val loadProject: LoadProject,
+                    private val loadProjects: LoadProjects): ViewModel() {
 
     fun insertProject(name: String, description: String, onFinish: () -> Unit){
         insertProject.execute(
@@ -73,6 +74,10 @@ class ProjectsViewModel
 
     fun loadTaskStatus(statusId: Int, onFinish: (TaskStatusEntity) -> Unit){
         loadTaskStatus.execute(statusId = statusId, onFinish = onFinish)
+    }
+
+    fun loadProjects(onFinish: (List<ProjectEntity>) -> Unit){
+        loadProjects.execute(onFinish = onFinish)
     }
 
 }
