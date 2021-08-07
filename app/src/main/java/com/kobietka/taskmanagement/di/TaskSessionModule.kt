@@ -1,5 +1,6 @@
 package com.kobietka.taskmanagement.di
 
+import com.kobietka.taskmanagement.domain.usecase.tasksession.LoadSessions
 import com.kobietka.taskmanagement.domain.usecase.tasksession.SaveSession
 import com.kobietka.taskmanagement.repository.inter.TaskSessionRepository
 import com.kobietka.taskmanagement.ui.util.DateUtil
@@ -22,6 +23,11 @@ class TaskSessionModule {
             taskSessionRepository = taskSessionRepository,
             dateUtil = dateUtil
         )
+    }
+
+    @Provides
+    fun provideLoadSessions(taskSessionRepository: TaskSessionRepository): LoadSessions {
+        return LoadSessions(taskSessionRepository = taskSessionRepository)
     }
 
 }

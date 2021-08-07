@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kobietka.taskmanagement.data.entity.TaskSessionEntity
+import com.kobietka.taskmanagement.domain.usecase.tasksession.LoadSessions
 import com.kobietka.taskmanagement.domain.usecase.tasksession.SaveSession
 import com.kobietka.taskmanagement.repository.inter.TaskSessionRepository
 import com.kobietka.taskmanagement.ui.util.DateUtil
@@ -15,9 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TimeMeasureViewModel
-@Inject constructor(private val taskSessionRepository: TaskSessionRepository,
-                    private val dateUtil: DateUtil,
-                    private val saveSession: SaveSession): ViewModel() {
+@Inject constructor(private val saveSession: SaveSession,
+                    private val loadSessions: LoadSessions): ViewModel() {
 
     private val _timeText = MutableLiveData("00:00")
     private val _time = MutableLiveData(0)
@@ -55,10 +55,10 @@ class TimeMeasureViewModel
     }
 
     fun loadSessions(taskId: Int, onFinish: (List<TaskSessionEntity>) -> Unit){
-        taskSessionRepository.getAllByTaskId(taskId)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.io())
-            .subscribe(onFinish)
+        loadSessions.execute(
+            taskId = taskId,
+            onFinish = onFinish
+        )
     }
 
     private fun convertTime(seconds: Int): String {
