@@ -172,17 +172,26 @@ fun StatusChangeList(
         }
     )
 
-    Column(modifier = Modifier
-        .padding(top = 5.dp)
-        .verticalScroll(scrollState)) {
-        eventStatuses.value.reversed().forEach { statusEvent ->
-            StatusChangeItem(
-                statusChange = statusEvent,
-                projectsViewModel = projectsViewModel,
-                tasks = tasks
-            )
+    if(eventStatuses.value.isEmpty()){
+        Row(modifier = Modifier
+            .padding(20.dp)
+            .fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Text(text = "No status changes", color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 17.sp)
+        }
+    } else {
+        Column(modifier = Modifier
+            .padding(top = 5.dp)
+            .verticalScroll(scrollState)) {
+            eventStatuses.value.reversed().forEach { statusEvent ->
+                StatusChangeItem(
+                    statusChange = statusEvent,
+                    projectsViewModel = projectsViewModel,
+                    tasks = tasks
+                )
+            }
         }
     }
+
 }
 
 @Composable
