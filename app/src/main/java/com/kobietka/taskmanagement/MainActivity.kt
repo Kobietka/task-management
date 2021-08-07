@@ -21,6 +21,7 @@ import com.kobietka.taskmanagement.ui.screen.*
 import com.kobietka.taskmanagement.ui.theme.TaskManagementTheme
 import com.kobietka.taskmanagement.ui.util.Route
 import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
+import com.kobietka.taskmanagement.viewmodel.StatusChangeViewModel
 import com.kobietka.taskmanagement.viewmodel.TasksViewModel
 import com.kobietka.taskmanagement.viewmodel.TimeMeasureViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private val projectsViewModel: ProjectsViewModel by viewModels()
     private val tasksViewModel: TasksViewModel by viewModels()
     private val timeMeasureViewModel: TimeMeasureViewModel by viewModels()
+    private val statusChangeViewModel: StatusChangeViewModel by viewModels()
 
     @ExperimentalMaterialApi
     @ExperimentalFoundationApi
@@ -56,7 +58,8 @@ class MainActivity : AppCompatActivity() {
                             projectId = it.arguments?.getInt("id", -1)!!,
                             projectsViewModel = projectsViewModel,
                             navController = navController,
-                            tasksViewModel = tasksViewModel
+                            tasksViewModel = tasksViewModel,
+                            statusChangeViewModel = statusChangeViewModel
                         )
                     }
                     composable(Route.createTask, arguments = listOf(navArgument("id") { type = NavType.IntType })){
