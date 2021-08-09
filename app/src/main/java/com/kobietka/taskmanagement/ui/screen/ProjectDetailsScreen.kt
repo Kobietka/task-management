@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.List
+import androidx.compose.material.icons.outlined.NavigateNext
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -241,9 +242,14 @@ fun StatusChangeItem(
                     Text(text = statusChange.date, fontSize = 14.sp, color = Color.Gray)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(modifier = Modifier.padding(end = 10.dp), text = "from")
                     StatusChip(statusName = oldStatus.value!!.name, listOf())
-                    Text(modifier = Modifier.padding(start = 10.dp, end = 10.dp), text = "to")
+                    Icon(modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp)
+                        .size(30.dp, 30.dp),
+                        imageVector = Icons.Outlined.NavigateNext,
+                        contentDescription = "to state",
+                        tint = Color.Black
+                    )
                     StatusChip(statusName = newStatus.value!!.name, listOf())
                 }
             }
