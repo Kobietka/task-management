@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -88,10 +89,12 @@ fun ProjectDetailsScreen(
     Scaffold(
         backgroundColor = MaterialTheme.colors.primary,
         floatingActionButton = {
-            FloatingActionButton(
-                backgroundColor = MaterialTheme.colors.primary,
-                onClick = { navController.navigate(Route.createTaskRoute(projectId)) }) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "add task", tint = Color.Black)
+            if(!statusChangesVisible.value){
+                FloatingActionButton(
+                    backgroundColor = MaterialTheme.colors.primary,
+                    onClick = { navController.navigate(Route.createTaskRoute(projectId)) }) {
+                    Icon(imageVector = Icons.Filled.Add, contentDescription = "add task", tint = Color.Black)
+                }
             }
         },
         topBar = {
@@ -315,19 +318,35 @@ fun ProjectDetailsTopAppBar(
                     }
                 }
                 Row {
-                    Icon(modifier = Modifier
-                        .padding(end = 20.dp)
-                        .size(30.dp, 30.dp)
-                        .clickable {
-                            statusChangesVisible.value = !statusChangesVisible.value
-                            tasksLabel.value = "Status history"
-                            isFilterIconVisible.value = !isFilterIconVisible.value
-                            if(isFilterIconVisible.value) tasksLabel.value = "Tasks"
-                        },
-                        imageVector = Icons.Outlined.History,
-                        contentDescription = "status history",
-                        tint = Color.Black
-                    )
+                    if(!statusChangesVisible.value){
+                        Icon(modifier = Modifier
+                            .padding(end = 20.dp)
+                            .size(30.dp, 30.dp)
+                            .clickable {
+                                statusChangesVisible.value = !statusChangesVisible.value
+                                tasksLabel.value = "Status history"
+                                isFilterIconVisible.value = !isFilterIconVisible.value
+                                if(isFilterIconVisible.value) tasksLabel.value = "Tasks"
+                            },
+                            imageVector = Icons.Outlined.History,
+                            contentDescription = "status history",
+                            tint = Color.Black
+                        )
+                    } else {
+                        Icon(modifier = Modifier
+                            .padding(end = 20.dp)
+                            .size(30.dp, 30.dp)
+                            .clickable {
+                                statusChangesVisible.value = !statusChangesVisible.value
+                                tasksLabel.value = "Status history"
+                                isFilterIconVisible.value = !isFilterIconVisible.value
+                                if(isFilterIconVisible.value) tasksLabel.value = "Tasks"
+                            },
+                            imageVector = Icons.Outlined.List,
+                            contentDescription = "tasks",
+                            tint = Color.Black
+                        )
+                    }
                     Icon(modifier = Modifier
                         .size(30.dp, 30.dp)
                         .clickable { infoVisible.value = !infoVisible.value },
