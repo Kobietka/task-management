@@ -32,11 +32,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kobietka.taskmanagement.data.entity.StatusEventEntity
 import com.kobietka.taskmanagement.data.entity.TaskEntity
+import com.kobietka.taskmanagement.data.entity.TaskSessionEntity
 import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
 import com.kobietka.taskmanagement.ui.util.Route
 import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
 import com.kobietka.taskmanagement.viewmodel.StatusChangeViewModel
 import com.kobietka.taskmanagement.viewmodel.TasksViewModel
+import com.kobietka.taskmanagement.viewmodel.TimeMeasureViewModel
 
 
 @ExperimentalFoundationApi
@@ -48,7 +50,8 @@ fun ProjectDetailsScreen(
     projectsViewModel: ProjectsViewModel,
     navController: NavController,
     tasksViewModel: TasksViewModel,
-    statusChangeViewModel: StatusChangeViewModel
+    statusChangeViewModel: StatusChangeViewModel,
+    timeMeasureViewModel: TimeMeasureViewModel
 ){
     val name = remember { mutableStateOf("") }
     val descriptionVisible = remember { mutableStateOf(false) }
@@ -145,6 +148,7 @@ fun ProjectDetailsScreen(
                             topAppBarVisible = topAppBarVisible,
                             navController = navController,
                             projectsViewModel = projectsViewModel,
+                            timeMeasureViewModel = timeMeasureViewModel,
                             statuses = statuses,
                             tasks = tasks
                         )
@@ -225,7 +229,9 @@ fun StatusChangeItem(
             .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
             .fillMaxWidth(), shape = RoundedCornerShape(10.dp)) {
             Column(modifier = Modifier.padding(20.dp)) {
-                Row(modifier = Modifier.padding(bottom = 10.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Row(modifier = Modifier
+                    .padding(bottom = 10.dp)
+                    .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Row {
                         Text(text = task.name, fontWeight = FontWeight.Bold)
                     }
@@ -236,55 +242,9 @@ fun StatusChangeItem(
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(modifier = Modifier.padding(end = 10.dp), text = "from")
-                    Column(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(5.dp))
-                            .background(
-                                when (oldStatus.value!!.name) {
-                                    "Not started" -> statusRed()
-                                    "In progress" -> statusBlue()
-                                    "Completed" -> statusGreen()
-                                    else -> Color.Black
-                                }
-                            )
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(
-                                start = 20.dp,
-                                top = 10.dp,
-                                end = 20.dp,
-                                bottom = 10.dp
-                            ),
-                            text = oldStatus.value!!.name,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
+                    StatusChip(statusName = oldStatus.value!!.name, listOf())
                     Text(modifier = Modifier.padding(start = 10.dp, end = 10.dp), text = "to")
-                    Column(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(5.dp))
-                            .background(
-                                when (newStatus.value!!.name) {
-                                    "Not started" -> statusRed()
-                                    "In progress" -> statusBlue()
-                                    "Completed" -> statusGreen()
-                                    else -> Color.Black
-                                }
-                            )
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(
-                                start = 20.dp,
-                                top = 10.dp,
-                                end = 20.dp,
-                                bottom = 10.dp
-                            ),
-                            text = newStatus.value!!.name,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
+                    StatusChip(statusName = newStatus.value!!.name, listOf())
                 }
             }
         }
@@ -326,7 +286,7 @@ fun ProjectDetailsTopAppBar(
                                 statusChangesVisible.value = !statusChangesVisible.value
                                 tasksLabel.value = "Status history"
                                 isFilterIconVisible.value = !isFilterIconVisible.value
-                                if(isFilterIconVisible.value) tasksLabel.value = "Tasks"
+                                if (isFilterIconVisible.value) tasksLabel.value = "Tasks"
                             },
                             imageVector = Icons.Outlined.History,
                             contentDescription = "status history",
@@ -340,7 +300,7 @@ fun ProjectDetailsTopAppBar(
                                 statusChangesVisible.value = !statusChangesVisible.value
                                 tasksLabel.value = "Status history"
                                 isFilterIconVisible.value = !isFilterIconVisible.value
-                                if(isFilterIconVisible.value) tasksLabel.value = "Tasks"
+                                if (isFilterIconVisible.value) tasksLabel.value = "Tasks"
                             },
                             imageVector = Icons.Outlined.List,
                             contentDescription = "tasks",
@@ -402,6 +362,7 @@ fun ProjectDetailsTaskList(
     topAppBarVisible: MutableState<Boolean>,
     navController: NavController,
     projectsViewModel: ProjectsViewModel,
+    timeMeasureViewModel: TimeMeasureViewModel,
     statuses: MutableState<List<TaskStatusEntity>>,
     tasks: MutableState<List<TaskEntity>>
 ){
@@ -411,7 +372,8 @@ fun ProjectDetailsTaskList(
                 topAppBarState = topAppBarVisible,
                 tasks = tasks.value.filter { !it.isArchived },
                 navController = navController,
-                projectsViewModel = projectsViewModel
+                projectsViewModel = projectsViewModel,
+                timeMeasureViewModel = timeMeasureViewModel
             )
         }
         "by status" -> {
@@ -420,7 +382,8 @@ fun ProjectDetailsTaskList(
                 statuses = statuses.value,
                 tasks = tasks.value.filter { !it.isArchived },
                 navController = navController,
-                projectsViewModel = projectsViewModel
+                projectsViewModel = projectsViewModel,
+                timeMeasureViewModel = timeMeasureViewModel
             )
         }
         "archived" -> {
@@ -428,7 +391,8 @@ fun ProjectDetailsTaskList(
                 topAppBarState = topAppBarVisible,
                 tasks = tasks.value.filter { it.isArchived },
                 navController = navController,
-                projectsViewModel = projectsViewModel
+                projectsViewModel = projectsViewModel,
+                timeMeasureViewModel = timeMeasureViewModel
             )
         }
         else -> {
@@ -436,11 +400,11 @@ fun ProjectDetailsTaskList(
                 if(taskStatus.name == taskListFilter.value){
                     TaskListWithOnlyOneStatus(
                         topAppBarState = topAppBarVisible,
-                        statuses = statuses.value,
                         statusId = taskStatus.id!!,
                         tasks = tasks.value.filter { !it.isArchived },
                         navController = navController,
-                        projectsViewModel = projectsViewModel
+                        projectsViewModel = projectsViewModel,
+                        timeMeasureViewModel = timeMeasureViewModel
                     )
                 }
             }
@@ -474,8 +438,14 @@ fun ProjectDetailsTaskLabel(
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
-fun Task(taskEntity: TaskEntity, projectsViewModel: ProjectsViewModel, navController: NavController){
+fun Task(
+    taskEntity: TaskEntity,
+    projectsViewModel: ProjectsViewModel,
+    navController: NavController,
+    timeMeasureViewModel: TimeMeasureViewModel
+){
     val status = remember { mutableStateOf("") }
+    val sessions = remember { mutableStateOf<List<TaskSessionEntity>>(listOf()) }
     val firstTime = remember { mutableStateOf(true) }
 
     if(firstTime.value){
@@ -483,6 +453,12 @@ fun Task(taskEntity: TaskEntity, projectsViewModel: ProjectsViewModel, navContro
             statusId = taskEntity.statusId,
             onFinish = { taskStatusEntity ->
                 status.value = taskStatusEntity.name
+                timeMeasureViewModel.loadSessions(
+                    taskId = taskEntity.id!!,
+                    onFinish = { taskSessions ->
+                        sessions.value = taskSessions
+                    }
+                )
             }
         )
     }
@@ -503,30 +479,7 @@ fun Task(taskEntity: TaskEntity, projectsViewModel: ProjectsViewModel, navContro
             }
             Text(modifier = Modifier.padding(bottom = 5.dp), text = taskEntity.dueDate, fontSize = 16.sp, fontWeight = FontWeight.Normal, color = Color.Gray)
             AnimatedVisibility(visible = status.value != "") {
-                Column(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(5.dp))
-                        .background(
-                            when (status.value) {
-                                "Not started" -> statusRed()
-                                "In progress" -> statusBlue()
-                                "Completed" -> statusGreen()
-                                else -> Color.Black
-                            }
-                        )
-                ) {
-                    Text(
-                        modifier = Modifier.padding(
-                            start = 20.dp,
-                            top = 10.dp,
-                            end = 20.dp,
-                            bottom = 10.dp
-                        ),
-                        text = status.value,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+                StatusChip(statusName = status.value, sessions.value)
             }
         }
     }
@@ -535,7 +488,13 @@ fun Task(taskEntity: TaskEntity, projectsViewModel: ProjectsViewModel, navContro
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
-fun TaskList(topAppBarState: MutableState<Boolean>, tasks: List<TaskEntity>, navController: NavController, projectsViewModel: ProjectsViewModel){
+fun TaskList(
+    topAppBarState: MutableState<Boolean>,
+    tasks: List<TaskEntity>,
+    navController: NavController,
+    projectsViewModel: ProjectsViewModel,
+    timeMeasureViewModel: TimeMeasureViewModel
+){
     val lazyListState = rememberLazyListState()
 
     topAppBarState.value = !lazyListState.isScrollInProgress
@@ -551,7 +510,12 @@ fun TaskList(topAppBarState: MutableState<Boolean>, tasks: List<TaskEntity>, nav
             .padding(start = 20.dp, end = 20.dp, top = 5.dp)
             .fillMaxSize(), state = lazyListState) {
             items(tasks.size){
-                Task(taskEntity = tasks[it], navController = navController, projectsViewModel = projectsViewModel)
+                Task(
+                    taskEntity = tasks[it],
+                    navController = navController,
+                    projectsViewModel = projectsViewModel,
+                    timeMeasureViewModel = timeMeasureViewModel
+                )
             }
         }
     }
@@ -560,7 +524,14 @@ fun TaskList(topAppBarState: MutableState<Boolean>, tasks: List<TaskEntity>, nav
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
-fun TaskListByStatus(topAppBarState: MutableState<Boolean>, statuses: List<TaskStatusEntity>, tasks: List<TaskEntity>, navController: NavController, projectsViewModel: ProjectsViewModel){
+fun TaskListByStatus(
+    topAppBarState: MutableState<Boolean>,
+    statuses: List<TaskStatusEntity>,
+    tasks: List<TaskEntity>,
+    navController: NavController,
+    projectsViewModel: ProjectsViewModel,
+    timeMeasureViewModel: TimeMeasureViewModel
+){
     val scrollState = rememberScrollState()
 
     topAppBarState.value = !scrollState.isScrollInProgress
@@ -580,7 +551,12 @@ fun TaskListByStatus(topAppBarState: MutableState<Boolean>, statuses: List<TaskS
                 val tasksWithStatus = tasks.filter { task -> task.statusId == status.id }
                 if(tasksWithStatus.isNotEmpty())  Text(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp), text = status.name, color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 17.sp)
                 tasksWithStatus.forEach {
-                    Task(taskEntity = it, navController = navController, projectsViewModel = projectsViewModel)
+                    Task(
+                        taskEntity = it,
+                        navController = navController,
+                        projectsViewModel = projectsViewModel,
+                        timeMeasureViewModel = timeMeasureViewModel
+                    )
                 }
             }
         }
@@ -590,7 +566,14 @@ fun TaskListByStatus(topAppBarState: MutableState<Boolean>, statuses: List<TaskS
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
-fun TaskListWithOnlyOneStatus(topAppBarState: MutableState<Boolean>, statuses: List<TaskStatusEntity>, statusId: Int, tasks: List<TaskEntity>, navController: NavController, projectsViewModel: ProjectsViewModel){
+fun TaskListWithOnlyOneStatus(
+    topAppBarState: MutableState<Boolean>,
+    statusId: Int,
+    tasks: List<TaskEntity>,
+    navController: NavController,
+    projectsViewModel: ProjectsViewModel,
+    timeMeasureViewModel: TimeMeasureViewModel
+){
     val filteredTasks = tasks.filter { task -> task.statusId == statusId }
     val lazyListState = rememberLazyListState()
 
@@ -608,13 +591,46 @@ fun TaskListWithOnlyOneStatus(topAppBarState: MutableState<Boolean>, statuses: L
                 .padding(start = 20.dp, end = 20.dp, top = 5.dp)
                 .fillMaxSize(), state = lazyListState) {
                 items(filteredTasks.size){
-                    Task(taskEntity = filteredTasks[it], navController = navController, projectsViewModel = projectsViewModel)
+                    Task(
+                        taskEntity = filteredTasks[it],
+                        navController = navController,
+                        projectsViewModel = projectsViewModel,
+                        timeMeasureViewModel = timeMeasureViewModel
+                    )
                 }
             }
         }
     }
 }
 
+@Composable
+fun StatusChip(statusName: String, taskSessions: List<TaskSessionEntity>){
+    val seconds = taskSessions.fold(0) { acc, taskSessionEntity -> acc + taskSessionEntity.timeInSeconds }
+    Column(
+        modifier = Modifier
+            .clip(RoundedCornerShape(5.dp))
+            .background(
+                when (statusName) {
+                    "Not started" -> statusRed()
+                    "In progress" -> statusBlue()
+                    "Completed" -> statusGreen()
+                    else -> Color.Black
+                }
+            )
+    ) {
+        Text(
+            modifier = Modifier.padding(
+                start = 20.dp,
+                top = 10.dp,
+                end = 20.dp,
+                bottom = 10.dp
+            ),
+            text = statusName + if(seconds >= 60) " ${seconds/60} minutes" else "",
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
 
 fun statusBlue(): Color {
     return Color(0xFFB3E5FC)

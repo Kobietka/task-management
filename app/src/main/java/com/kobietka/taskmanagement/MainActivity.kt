@@ -59,7 +59,8 @@ class MainActivity : AppCompatActivity() {
                             projectsViewModel = projectsViewModel,
                             navController = navController,
                             tasksViewModel = tasksViewModel,
-                            statusChangeViewModel = statusChangeViewModel
+                            statusChangeViewModel = statusChangeViewModel,
+                            timeMeasureViewModel = timeMeasureViewModel
                         )
                     }
                     composable(Route.createTask, arguments = listOf(navArgument("id") { type = NavType.IntType })){
