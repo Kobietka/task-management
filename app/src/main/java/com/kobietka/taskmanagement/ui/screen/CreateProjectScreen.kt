@@ -12,7 +12,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -26,15 +25,15 @@ import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
 
 @ExperimentalComposeUiApi
 @Composable
-fun CreateProjectScreen(projectsViewModel: ProjectsViewModel, navController: NavController){
+fun CreateProjectScreen(
+    projectsViewModel: ProjectsViewModel,
+    navController: NavController
+){
     val name = remember { mutableStateOf(TextFieldValue("")) }
     val nameError = remember { mutableStateOf(false) }
-
     val description = remember { mutableStateOf(TextFieldValue("")) }
     val descriptionError = remember { mutableStateOf(false) }
-
     val focusRequester = remember { FocusRequester() }
-
 
     Column {
         Row(
@@ -42,7 +41,11 @@ fun CreateProjectScreen(projectsViewModel: ProjectsViewModel, navController: Nav
                 .padding(top = 70.dp, start = 25.dp, end = 25.dp, bottom = 70.dp)
                 .fillMaxWidth(), horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "Create project", fontWeight = FontWeight.Bold, fontSize = 25.sp)
+            Text(
+                text = "Create project",
+                fontWeight = FontWeight.Bold,
+                fontSize = 25.sp
+            )
         }
         Box(
             Modifier
@@ -51,10 +54,11 @@ fun CreateProjectScreen(projectsViewModel: ProjectsViewModel, navController: Nav
                 .background(MaterialTheme.colors.primary)
         ) {
             Column(
-                Modifier
+                modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 50.dp, start = 25.dp, end = 25.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-
+                    .padding(top = 50.dp, start = 25.dp, end = 25.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 NormalTextField(
                     state = name,
                     errorState = nameError,
@@ -98,7 +102,11 @@ fun CreateProjectScreen(projectsViewModel: ProjectsViewModel, navController: Nav
                         backgroundColor = MaterialTheme.colors.secondary
                     ))
                 {
-                    Text(text = "Create", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text(
+                        text = "Create",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp
+                    )
                 }
 
             }
