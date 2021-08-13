@@ -17,6 +17,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,45 +30,78 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kobietka.taskmanagement.data.entity.ProjectEntity
+import com.kobietka.taskmanagement.ui.theme.orange
 import com.kobietka.taskmanagement.ui.util.Route
-import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
+import com.kobietka.taskmanagement.viewmodel.MainScreenViewModel
+import kotlinx.coroutines.delay
 
 
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
-fun MainScreen(projectsViewModel: ProjectsViewModel, navController: NavController){
-    val projects = remember { mutableStateOf<List<ProjectEntity>>(listOf()) }
+fun MainScreen(
+    mainScreenViewModel: MainScreenViewModel,
+    navController: NavController
+){
+    val projects = mainScreenViewModel.projects().observeAsState(initial = listOf())
+    val loadingFinished = mainScreenViewModel.isProjectLoadingFinished().observeAsState(initial = false)
     val lazyColumnState = rememberLazyListState()
     val topAppBarVisible = remember { mutableStateOf(true) }
     val infoVisible = remember { mutableStateOf(false) }
-
-    projectsViewModel.loadProjects {
-        projects.value = it
-    }
+    val isUiVisible = remember { mutableStateOf(false) }
 
     topAppBarVisible.value = !lazyColumnState.isScrollInProgress
+
+    LaunchedEffect(key1 = 1, block = {
+        while (!loadingFinished.value){
+            delay(400)
+        }
+        isUiVisible.value = true
+    })
 
     Scaffold(
         backgroundColor = MaterialTheme.colors.primary,
         floatingActionButton = {
-            FloatingActionButton(backgroundColor = MaterialTheme.colors.primary, onClick = { navController.navigate(Route.createProject) }) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "add project", tint = Color.Black)
+            FloatingActionButton(
+                backgroundColor = MaterialTheme.colors.primary,
+                onClick = { navController.navigate(Route.createProject) }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "add project",
+                    tint = Color.Black
+                )
             }
         },
         topBar = {
             AnimatedVisibility(visible = topAppBarVisible.value) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Row(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
                         Column {
-                            Text(text = "Hi!", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-                            Text(text = "You have got some work to do!", fontSize = 16.sp, color = Color.Black)
+                            Text(
+                                text = "Hi!",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
+                            Text(
+                                text = "You have got some work to do!",
+                                fontSize = 16.sp,
+                                color = Color.Black
+                            )
                         }
                         Icon(modifier = Modifier
-                            .size(30.dp, 30.dp)
-                            .clickable { infoVisible.value = !infoVisible.value }, imageVector = Icons.Outlined.Info, contentDescription = "info", tint = Color.Black)
+                                .size(30.dp, 30.dp)
+                                .clickable { infoVisible.value = !infoVisible.value },
+                            imageVector = Icons.Outlined.Info,
+                            contentDescription = "info",
+                            tint = Color.Black
+                        )
                     }
                     AnimatedVisibility(visible = infoVisible.value) {
                         Card(modifier = Modifier.padding(10.dp), backgroundColor = Color.White) {
@@ -88,22 +123,52 @@ fun MainScreen(projectsViewModel: ProjectsViewModel, navController: NavControlle
                     .background(MaterialTheme.colors.secondary)) {
                 Column {
                     Card(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(90.dp), backgroundColor = MaterialTheme.colors.secondary, elevation = 20.dp) {
-                        Text(modifier = Modifier.padding(top = 32.dp, start = 20.dp, end = 20.dp), text = "Your projects", fontSize = 19.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                            .fillMaxWidth()
+                            .height(90.dp),
+                        backgroundColor = MaterialTheme.colors.secondary,
+                        elevation = 20.dp
+                    ){
+                        Text(
+                            modifier = Modifier.padding(top = 32.dp, start = 20.dp, end = 20.dp),
+                            text = "Your projects",
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black)
                     }
-                    if(projects.value.isEmpty()){
-                        Row(modifier = Modifier
-                            .padding(20.dp)
-                            .fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                            Text(text = "No projects", color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 17.sp)
+                    if(!isUiVisible.value){
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(orange),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            CircularProgressIndicator()
                         }
                     } else {
-                        LazyColumn(modifier = Modifier
-                            .padding(start = 20.dp, end = 20.dp, top = 5.dp)
-                            .fillMaxSize(), state = lazyColumnState) {
-                            items(projects.value.size){
-                                Project(projectEntity = projects.value[it], navController = navController)
+                        if(projects.value.isEmpty()){
+                            Row(modifier = Modifier
+                                    .padding(20.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "No projects",
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 17.sp
+                                )
+                            }
+                        } else {
+                            LazyColumn(modifier = Modifier
+                                .padding(start = 20.dp, end = 20.dp, top = 5.dp)
+                                .fillMaxSize(), state = lazyColumnState) {
+                                items(projects.value.size){
+                                    Project(
+                                        projectEntity = projects.value[it],
+                                        navController = navController
+                                    )
+                                }
                             }
                         }
                     }
@@ -137,9 +202,17 @@ fun Project(projectEntity: ProjectEntity, navController: NavController){
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically)
                 {
-                    Text(text = projectEntity.name, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Text(
+                        text = projectEntity.name,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
                 }
-                Text(modifier = Modifier.padding(top = 10.dp), text = projectEntity.description, fontSize = 18.sp)
+                Text(
+                    modifier = Modifier.padding(top = 10.dp),
+                    text = projectEntity.description,
+                    fontSize = 18.sp
+                )
             }
         }
     }

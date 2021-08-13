@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private val timeMeasureViewModel: TimeMeasureViewModel by viewModels()
     private val statusChangeViewModel: StatusChangeViewModel by viewModels()
     private val projectDetailsViewModel: ProjectDetailsViewModel by viewModels()
+    private val mainScreenViewModel: MainScreenViewModel by viewModels()
 
     @ExperimentalMaterialApi
     @ExperimentalFoundationApi
@@ -44,7 +45,11 @@ class MainActivity : AppCompatActivity() {
                 NavHost(navController = navController, startDestination = Route.main) {
                     composable(Route.main){
                         window.statusBarColor = MaterialTheme.colors.primary.toArgb()
-                        MainScreen(projectsViewModel, navController)
+                        mainScreenViewModel.loadProjects()
+                        MainScreen(
+                            mainScreenViewModel = mainScreenViewModel,
+                            navController = navController
+                        )
                     }
                     composable(Route.createProject){
                         window.statusBarColor = Color.White.toArgb()
