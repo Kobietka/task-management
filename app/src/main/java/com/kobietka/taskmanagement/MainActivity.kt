@@ -54,13 +54,18 @@ class MainActivity : AppCompatActivity() {
                     }
                     composable(Route.projectDetails, arguments = listOf(navArgument("id") { type = NavType.IntType })){
                         window.statusBarColor = MaterialTheme.colors.primary.toArgb()
+                        projectsViewModel.loadProjectData(
+                            projectId = it.arguments?.getInt("id", -1)!!
+                        )
+                        statusChangeViewModel.loadStatusEventsData(
+                            projectId = it.arguments?.getInt("id", -1)!!
+                        )
+                        tasksViewModel.loadTaskStatusesData()
                         ProjectDetailsScreen(
-                            projectId = it.arguments?.getInt("id", -1)!!,
                             projectsViewModel = projectsViewModel,
-                            navController = navController,
                             tasksViewModel = tasksViewModel,
                             statusChangeViewModel = statusChangeViewModel,
-                            timeMeasureViewModel = timeMeasureViewModel
+                            navController = navController
                         )
                     }
                     composable(Route.createTask, arguments = listOf(navArgument("id") { type = NavType.IntType })){
