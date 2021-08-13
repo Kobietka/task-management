@@ -24,36 +24,32 @@ import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
 import com.kobietka.taskmanagement.ui.util.MultiLineTextField
 import com.kobietka.taskmanagement.ui.util.NormalTextField
 import com.kobietka.taskmanagement.ui.util.Route
+import com.kobietka.taskmanagement.viewmodel.CreateTaskViewModel
 import com.kobietka.taskmanagement.viewmodel.TasksViewModel
 
 
 @ExperimentalComposeUiApi
 @Composable
-fun CreateTaskScreen(projectId: Int, tasksViewModel: TasksViewModel, navController: NavController, onDateClick: () -> Unit){
-    val firstTime = remember { mutableStateOf(true) }
-
-    val taskStatuses = remember { mutableStateOf(listOf<TaskStatusEntity>()) }
+fun CreateTaskScreen(
+    createTaskViewModel: CreateTaskViewModel,
+    tasksViewModel: TasksViewModel,
+    navController: NavController,
+    onDateClick: () -> Unit
+){
+    val taskStatuses = createTaskViewModel.taskStatuses().observeAsState(initial = listOf())
+    val projectId = createTaskViewModel.projectId().observeAsState(initial = 0)
 
     val menuExpanded = remember { mutableStateOf(false) }
     val statusBoxText = remember { mutableStateOf("Select task status") }
-    val statusId = remember { mutableStateOf(-1) }
+    val statusId = remember { mutableStateOf(0) }
 
-    val dateText = tasksViewModel.taskDate().observeAsState(initial = "Due date")
+    val dateText = createTaskViewModel.taskDate().observeAsState(initial = "Due date")
 
     val name = remember { mutableStateOf(TextFieldValue("")) }
     val nameError = remember { mutableStateOf(false) }
-
     val description = remember { mutableStateOf(TextFieldValue("")) }
     val descriptionError = remember { mutableStateOf(false) }
-
     val focusRequester = remember { FocusRequester() }
-
-    if(firstTime.value){
-        tasksViewModel.loadTaskStatuses { statuses ->
-            taskStatuses.value = statuses
-            firstTime.value = false
-        }
-    }
 
     Column {
         Row(
@@ -72,7 +68,8 @@ fun CreateTaskScreen(projectId: Int, tasksViewModel: TasksViewModel, navControll
             Column(
                 Modifier
                     .fillMaxSize()
-                    .padding(top = 50.dp, start = 25.dp, end = 25.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    .padding(top = 50.dp, start = 25.dp, end = 25.dp),
+                horizontalAlignment = Alignment.CenterHorizontally) {
 
                 NormalTextField(
                     state = name,
@@ -94,17 +91,21 @@ fun CreateTaskScreen(projectId: Int, tasksViewModel: TasksViewModel, navControll
                 )
 
                 Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .padding(top = 10.dp)
-                    .background(Color.White)
-                    .clickable { menuExpanded.value = true }, contentAlignment = Alignment.Center) {
+                        .fillMaxWidth()
+                        .height(80.dp)
+                        .padding(top = 10.dp)
+                        .background(Color.White)
+                        .clickable { menuExpanded.value = true },
+                    contentAlignment = Alignment.Center) {
                     if(statusBoxText.value != "Select task status"){
                         taskStatuses.value.filter { it.id == statusId.value }.forEach {
                             TaskStatusChip(taskStatus = it)
                         }
                     } else Text(text = statusBoxText.value)
-                    DropdownMenu(expanded = menuExpanded.value, onDismissRequest = { menuExpanded.value = false }) {
+                    DropdownMenu(
+                        expanded = menuExpanded.value,
+                        onDismissRequest = { menuExpanded.value = false }
+                    ) {
                         taskStatuses.value.forEach { taskStatus ->
                             DropdownMenuItem(
                                 onClick = {
@@ -133,20 +134,22 @@ fun CreateTaskScreen(projectId: Int, tasksViewModel: TasksViewModel, navControll
                         .height(60.dp)
                         .padding(top = 10.dp),
                     onClick = {
-                          if(name.value.text.isNotBlank() && description.value.text.isNotBlank() && statusId.value != -1 && dateText.value != "Due date"){
+                          if(name.value.text.isNotBlank() &&
+                              description.value.text.isNotBlank() &&
+                              statusId.value != 0 && dateText.value != "Due date"){
                               tasksViewModel.insertTask(
-                                  projectId = projectId,
+                                  projectId = projectId.value,
                                   name = name.value.text,
                                   description = description.value.text,
                                   dueDate = dateText.value,
                                   statusId = statusId.value,
                                   onFinish = {
-                                      navController.navigate(Route.projectDetailsRoute(projectId)){
+                                      navController.navigate(Route.projectDetailsRoute(projectId.value)){
                                           popUpTo(Route.projectDetails){
                                               inclusive = true
                                           }
                                       }
-                                      tasksViewModel.clearDate()
+                                      createTaskViewModel.clearDate()
                                   }
                               )
                           }
@@ -155,7 +158,11 @@ fun CreateTaskScreen(projectId: Int, tasksViewModel: TasksViewModel, navControll
                         backgroundColor = MaterialTheme.colors.secondary
                     ))
                 {
-                    Text(text = "Create", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text(
+                        text = "Create",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp
+                    )
                 }
 
             }

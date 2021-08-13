@@ -23,67 +23,65 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.kobietka.taskmanagement.data.entity.TaskEntity
-import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
 import com.kobietka.taskmanagement.ui.util.MultiLineTextField
 import com.kobietka.taskmanagement.ui.util.NormalTextField
 import com.kobietka.taskmanagement.ui.util.Route
+import com.kobietka.taskmanagement.viewmodel.TaskDetailsViewModel
 import com.kobietka.taskmanagement.viewmodel.TasksViewModel
 
 
 @ExperimentalComposeUiApi
 @Composable
-fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController: NavController, onDateClick: () -> Unit){
+fun TaskDetailsScreen(
+    taskDetailsViewModel: TaskDetailsViewModel,
+    tasksViewModel: TasksViewModel,
+    navController: NavController,
+    onDateClick: () -> Unit
+){
+    val taskStatuses = taskDetailsViewModel.taskStatuses().observeAsState(initial = listOf())
+    val taskStatusId = taskDetailsViewModel.taskStatusId().observeAsState(initial = 0)
+    val taskName = taskDetailsViewModel.taskName().observeAsState(initial = "")
+    val taskDescription = taskDetailsViewModel.taskDescription().observeAsState(initial = "")
+    val taskDueDate = taskDetailsViewModel.taskDueDate().observeAsState(initial = "Due date")
+    val taskId = taskDetailsViewModel.taskId().observeAsState(initial = 0)
+    val projectId = taskDetailsViewModel.projectId().observeAsState(initial = 0)
+    val loadingFinished = taskDetailsViewModel.loadingFinished().observeAsState(initial = false)
+
     val firstTime = remember { mutableStateOf(true) }
-
-    val taskStatuses = remember { mutableStateOf(listOf<TaskStatusEntity>()) }
-
     val menuExpanded = remember { mutableStateOf(false) }
     val statusBoxText = remember { mutableStateOf("Select task status") }
     val statusId = remember { mutableStateOf(-1) }
-    val projectId = remember { mutableStateOf(-1) }
-    val task = remember { mutableStateOf<TaskEntity?>(null) }
 
     val dateText = remember { mutableStateOf("Due date") }
-    val dateTextFromViewModel = tasksViewModel.taskDate().observeAsState(initial = dateText.value)
+    val dateTextFromViewModel = taskDetailsViewModel.taskDate().observeAsState(initial = dateText.value)
     val dateClicked = remember { mutableStateOf(false) }
     val dateClickedFirstTime = remember { mutableStateOf(false) }
 
     val name = remember { mutableStateOf(TextFieldValue("")) }
-    val nameError = remember { mutableStateOf(false) }
-
     val description = remember { mutableStateOf(TextFieldValue("")) }
+
+    val nameError = remember { mutableStateOf(false) }
     val descriptionError = remember { mutableStateOf(false) }
-
     val focusRequester = remember { FocusRequester() }
-
-    if(firstTime.value){
-        tasksViewModel.loadTaskStatuses { statuses ->
-            taskStatuses.value = statuses
-            tasksViewModel.loadTask(
-                taskId = taskId,
-                onFinish = { taskEntity ->
-                    task.value = taskEntity
-                    name.value = TextFieldValue(taskEntity.name)
-                    description.value = TextFieldValue(taskEntity.description)
-                    projectId.value = taskEntity.projectId
-                    dateText.value = taskEntity.dueDate
-                    statuses.first { it.id == taskEntity.statusId }.also { status ->
-                        statusId.value = status.id!!
-                        statusBoxText.value = status.name
-                    }
-                }
-            )
-        }
-        firstTime.value = false
-    }
 
     if(dateClicked.value){
         if(dateClickedFirstTime.value){
-            tasksViewModel.clearDate()
+            taskDetailsViewModel.clearDate()
             dateClickedFirstTime.value = false
         }
         dateText.value = dateTextFromViewModel.value
+    }
+
+    if(loadingFinished.value && firstTime.value){
+        name.value = TextFieldValue(taskName.value)
+        description.value = TextFieldValue(taskDescription.value)
+        statusId.value = taskStatusId.value
+        dateText.value = taskDueDate.value
+        taskStatuses.value.first { it.id == taskStatusId.value }.also { status ->
+            statusId.value = status.id!!
+            statusBoxText.value = status.name
+        }
+        firstTime.value = false
     }
 
     Column {
@@ -95,7 +93,7 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
                     .width(35.dp)
                     .clickable {
                         tasksViewModel.archiveTask(
-                            taskId = taskId,
+                            taskId = taskId.value,
                             onFinish = {
                                 navController.navigate(Route.projectDetailsRoute(projectId.value)) {
                                     popUpTo(Route.projectDetails) {
@@ -115,7 +113,7 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
                     .width(35.dp)
                     .clickable {
                         tasksViewModel.deleteTask(
-                            taskId = taskId,
+                            taskId = taskId.value,
                             onFinish = {
                                 navController.navigate(Route.projectDetailsRoute(projectId.value)) {
                                     popUpTo(Route.projectDetails) {
@@ -134,7 +132,11 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
                 .padding(top = 70.dp, start = 25.dp, end = 25.dp, bottom = 70.dp)
                 .fillMaxWidth(), horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "Edit task", fontWeight = FontWeight.Bold, fontSize = 25.sp)
+            Text(
+                text = "Edit task",
+                fontWeight = FontWeight.Bold,
+                fontSize = 25.sp
+            )
         }
         Box(
             Modifier
@@ -143,9 +145,10 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
                 .background(MaterialTheme.colors.primary)
         ) {
             Column(
-                Modifier
+                modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 50.dp, start = 25.dp, end = 25.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    .padding(top = 50.dp, start = 25.dp, end = 25.dp),
+                horizontalAlignment = Alignment.CenterHorizontally) {
 
                 NormalTextField(
                     state = name,
@@ -166,18 +169,23 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
                     focusRequester = focusRequester
                 )
 
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .padding(top = 10.dp)
-                    .background(Color.White)
-                    .clickable { menuExpanded.value = true }, contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(80.dp)
+                        .padding(top = 10.dp)
+                        .background(Color.White)
+                        .clickable { menuExpanded.value = true },
+                    contentAlignment = Alignment.Center) {
                     if(statusBoxText.value != "Select task status"){
-                        taskStatuses.value.filter { it.id == statusId.value }.forEach {
+                        taskStatuses.value.first { it.id == statusId.value }.also {
                             TaskStatusChip(taskStatus = it)
                         }
                     } else Text(text = statusBoxText.value)
-                    DropdownMenu(expanded = menuExpanded.value, onDismissRequest = { menuExpanded.value = false }) {
+                    DropdownMenu(
+                        expanded = menuExpanded.value,
+                        onDismissRequest = { menuExpanded.value = false }
+                    ) {
                         taskStatuses.value.forEach { taskStatus ->
                             DropdownMenuItem(
                                 onClick = {
@@ -196,7 +204,11 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
                     .height(80.dp)
                     .padding(top = 10.dp)
                     .background(Color.White)
-                    .clickable { onDateClick(); dateClicked.value = true; dateClickedFirstTime.value = true }, contentAlignment = Alignment.Center){
+                    .clickable {
+                        onDateClick()
+                        dateClicked.value = true
+                        dateClickedFirstTime.value = true
+                    }, contentAlignment = Alignment.Center){
                     Text(text = if(dateClicked.value) dateTextFromViewModel.value else dateText.value)
                 }
 
@@ -206,9 +218,13 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
                         .height(60.dp)
                         .padding(top = 10.dp),
                     onClick = {
-                        if(name.value.text.isNotBlank() && description.value.text.isNotBlank() && statusId.value != -1 && dateText.value != "Due date"){
+                        if(name.value.text.isNotBlank() &&
+                            description.value.text.isNotBlank() &&
+                            statusId.value != -1 &&
+                            dateText.value != "Due date"
+                        ){
                             tasksViewModel.updateTask(
-                                oldTaskEntity = task.value!!,
+                                taskId = taskId.value,
                                 name = name.value.text,
                                 description = description.value.text,
                                 newStatusId = statusId.value,
@@ -227,7 +243,11 @@ fun TaskDetailsScreen(taskId: Int, tasksViewModel: TasksViewModel, navController
                         backgroundColor = MaterialTheme.colors.secondary
                     ))
                 {
-                    Text(text = "Save", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text(
+                        text = "Save",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp
+                    )
                 }
 
             }

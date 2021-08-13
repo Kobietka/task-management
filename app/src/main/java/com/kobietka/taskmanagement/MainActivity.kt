@@ -11,6 +11,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -31,6 +32,8 @@ class MainActivity : AppCompatActivity() {
     private val statusChangeViewModel: StatusChangeViewModel by viewModels()
     private val projectDetailsViewModel: ProjectDetailsViewModel by viewModels()
     private val mainScreenViewModel: MainScreenViewModel by viewModels()
+    private val taskDetailsViewModel: TaskDetailsViewModel by viewModels()
+    private val createTasksViewModel: CreateTaskViewModel by viewModels()
 
     @ExperimentalMaterialApi
     @ExperimentalFoundationApi
@@ -53,7 +56,10 @@ class MainActivity : AppCompatActivity() {
                     }
                     composable(Route.createProject){
                         window.statusBarColor = Color.White.toArgb()
-                        CreateProjectScreen(projectsViewModel, navController)
+                        CreateProjectScreen(
+                            projectsViewModel = projectsViewModel,
+                            navController = navController
+                        )
                     }
                     composable(Route.projectDetails, arguments = listOf(navArgument("id") { type = NavType.IntType })){
                         window.statusBarColor = MaterialTheme.colors.primary.toArgb()
@@ -73,23 +79,29 @@ class MainActivity : AppCompatActivity() {
                     }
                     composable(Route.createTask, arguments = listOf(navArgument("id") { type = NavType.IntType })){
                         window.statusBarColor = Color.White.toArgb()
+                        createTasksViewModel.loadStatuses(
+                            projectId = it.arguments?.getInt("id", -1)!!
+                        )
                         CreateTaskScreen(
-                            projectId = it.arguments?.getInt("id", -1)!!,
+                            createTaskViewModel = createTasksViewModel,
                             tasksViewModel = tasksViewModel,
                             navController = navController,
                             onDateClick = {
-                                showDatePicker()
+                                showDatePicker(createTaskViewModel = createTasksViewModel)
                             }
                         )
                     }
                     composable(Route.taskDetails, arguments = listOf(navArgument("id") { type = NavType.IntType })){
                         window.statusBarColor = Color.White.toArgb()
+                        taskDetailsViewModel.loadTaskData(
+                            taskId = it.arguments?.getInt("id", -1)!!
+                        )
                         TaskDetailsScreen(
-                            taskId = it.arguments?.getInt("id", -1)!!,
+                            taskDetailsViewModel = taskDetailsViewModel,
                             tasksViewModel = tasksViewModel,
                             navController = navController,
                             onDateClick = {
-                                showDatePicker()
+                                showDatePicker(taskDetailsViewModel = taskDetailsViewModel)
                             }
                         )
                     }
@@ -115,15 +127,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showDatePicker(){
+    private fun showDatePicker(createTaskViewModel: CreateTaskViewModel){
         val picker = MaterialDatePicker.Builder.datePicker().build()
         this.let {
             picker.show(it.supportFragmentManager, picker.toString())
             picker.addOnPositiveButtonClickListener {
-                tasksViewModel.setDate(picker.headerText)
+                createTaskViewModel.setDate(picker.headerText)
             }
         }
     }
+
+    private fun showDatePicker(taskDetailsViewModel: TaskDetailsViewModel){
+        val picker = MaterialDatePicker.Builder.datePicker().build()
+        this.let {
+            picker.show(it.supportFragmentManager, picker.toString())
+            picker.addOnPositiveButtonClickListener {
+                taskDetailsViewModel.setDate(picker.headerText)
+            }
+        }
+    }
+
 }
 
 

@@ -29,19 +29,9 @@ class TasksViewModel
                     private val loadTask: LoadTask,
                     private val insertTask: InsertTask): ViewModel() {
 
-    private val _taskDate = MutableLiveData("Due date")
     private val _taskStatuses = MutableLiveData<List<TaskStatusEntity>>(listOf())
 
-    fun taskDate(): LiveData<String> = _taskDate
     fun taskStatuses(): LiveData<List<TaskStatusEntity>> = _taskStatuses
-
-    fun setDate(date: String){
-        _taskDate.value = date
-    }
-
-    fun clearDate(){
-        _taskDate.value = "Due date"
-    }
 
     fun loadTaskStatusesData(){
         loadTaskStatuses { statuses ->
@@ -50,7 +40,7 @@ class TasksViewModel
     }
 
     fun updateTask(
-        oldTaskEntity: TaskEntity,
+        taskId: Int,
         name: String,
         description: String,
         newStatusId: Int,
@@ -58,7 +48,7 @@ class TasksViewModel
         onFinish: () -> Unit
     ){
        updateTask.execute(
-           oldTaskEntity = oldTaskEntity,
+           taskId = taskId,
            name = name,
            description = description,
            newStatusId = newStatusId,
