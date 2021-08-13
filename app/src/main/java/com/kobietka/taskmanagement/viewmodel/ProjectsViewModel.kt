@@ -14,11 +14,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProjectsViewModel
-@Inject constructor(private val loadTaskStatus: LoadTaskStatus,
-                    private val insertProject: InsertProject,
+@Inject constructor(private val insertProject: InsertProject,
                     private val updateProject: UpdateProject,
                     private val deleteProject: DeleteProject,
-                    private val loadProjectWithTasks: LoadProjectWithTasks,
                     private val loadProject: LoadProject,
                     private val loadProjects: LoadProjects): ViewModel() {
 
@@ -51,25 +49,11 @@ class ProjectsViewModel
         )
     }
 
-    fun loadProjectWithTasks(
-        projectId: Int,
-        onFinish: (ProjectEntity, List<TaskEntity>) -> Unit
-    ){
-        loadProjectWithTasks.execute(
-            projectId = projectId,
-            onFinish = onFinish
-        )
-    }
-
     fun loadProject(id: Int, onFinish: (ProjectEntity) -> Unit){
         loadProject.execute(
             id = id,
             onFinish = onFinish
         )
-    }
-
-    fun loadTaskStatus(statusId: Int, onFinish: (TaskStatusEntity) -> Unit){
-        loadTaskStatus.execute(statusId = statusId, onFinish = onFinish)
     }
 
     fun loadProjects(onFinish: (List<ProjectEntity>) -> Unit){
