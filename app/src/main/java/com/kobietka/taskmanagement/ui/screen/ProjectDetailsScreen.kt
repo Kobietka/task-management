@@ -35,6 +35,7 @@ import com.kobietka.taskmanagement.data.entity.TaskSessionEntity
 import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
 import com.kobietka.taskmanagement.ui.theme.orange
 import com.kobietka.taskmanagement.ui.util.Route
+import com.kobietka.taskmanagement.viewmodel.ProjectDetailsViewModel
 import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
 import com.kobietka.taskmanagement.viewmodel.StatusChangeViewModel
 import com.kobietka.taskmanagement.viewmodel.TasksViewModel
@@ -44,16 +45,16 @@ import kotlinx.coroutines.delay
 @ExperimentalAnimationApi
 @Composable
 fun ProjectDetailsScreen(
-    projectsViewModel: ProjectsViewModel,
     tasksViewModel: TasksViewModel,
+    projectDetailsViewModel: ProjectDetailsViewModel,
     statusChangeViewModel: StatusChangeViewModel,
     navController: NavController
 ){
-    val projectName = projectsViewModel.projectName().observeAsState(initial = "")
-    val projectDescription = projectsViewModel.projectDescription().observeAsState(initial = "")
+    val projectName = projectDetailsViewModel.projectName().observeAsState(initial = "")
+    val projectDescription = projectDetailsViewModel.projectDescription().observeAsState(initial = "")
     val projectDescriptionVisible = remember { mutableStateOf(false) }
-    val projectId = projectsViewModel.projectId().observeAsState(initial = 0)
-    val projectTasks = projectsViewModel.projectTasks().observeAsState(initial = listOf())
+    val projectId = projectDetailsViewModel.projectId().observeAsState(initial = 0)
+    val projectTasks = projectDetailsViewModel.projectTasks().observeAsState(initial = listOf())
     val tasksStatuses = tasksViewModel.taskStatuses().observeAsState(initial = listOf())
     val statusEvents = statusChangeViewModel.statusChanges().observeAsState(initial = listOf())
 
@@ -65,7 +66,7 @@ fun ProjectDetailsScreen(
     val filterMenuExpanded = remember { mutableStateOf(false) }
     val topAppBarVisible = remember { mutableStateOf(true) }
 
-    val loadingFinished = projectsViewModel.loadingFinished().observeAsState(initial = false)
+    val loadingFinished = projectDetailsViewModel.loadingFinished().observeAsState(initial = false)
     val isUiVisible = remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = 1, block = {

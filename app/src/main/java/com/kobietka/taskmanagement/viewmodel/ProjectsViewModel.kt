@@ -1,8 +1,5 @@
 package com.kobietka.taskmanagement.viewmodel
 
-import android.annotation.SuppressLint
-import android.util.Log
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,15 +8,8 @@ import com.kobietka.taskmanagement.data.entity.TaskEntity
 import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
 import com.kobietka.taskmanagement.domain.usecase.project.*
 import com.kobietka.taskmanagement.domain.usecase.taskstatus.LoadTaskStatus
-import com.kobietka.taskmanagement.repository.inter.ProjectRepository
-import com.kobietka.taskmanagement.repository.inter.TaskRepository
-import com.kobietka.taskmanagement.ui.screen.ProjectDetailsScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
-import kotlin.system.measureTimeMillis
 
 
 @HiltViewModel
@@ -31,32 +21,6 @@ class ProjectsViewModel
                     private val loadProjectWithTasks: LoadProjectWithTasks,
                     private val loadProject: LoadProject,
                     private val loadProjects: LoadProjects): ViewModel() {
-
-    private val _projectName = MutableLiveData("")
-    private val _projectDescription = MutableLiveData("")
-    private val _projectTasks = MutableLiveData<List<TaskEntity>>(listOf())
-    private val _projectId = MutableLiveData(0)
-    private val _loadingFinished = MutableLiveData(false)
-
-    fun projectName(): LiveData<String> = _projectName
-    fun projectDescription(): LiveData<String> = _projectDescription
-    fun projectTasks(): LiveData<List<TaskEntity>> = _projectTasks
-    fun projectId(): LiveData<Int> = _projectId
-    fun loadingFinished(): LiveData<Boolean> = _loadingFinished
-
-    fun loadProjectData(projectId: Int){
-        _loadingFinished.value = false
-        loadProjectWithTasks(
-            projectId = projectId,
-            onFinish = { projectEntity, tasks ->
-                _projectId.value = projectEntity.id
-                _projectName.value = projectEntity.name
-                _projectDescription.value = projectEntity.description
-                _projectTasks.value = tasks
-                _loadingFinished.value = true
-            }
-        )
-    }
 
     fun insertProject(name: String, description: String, onFinish: () -> Unit){
         insertProject.execute(

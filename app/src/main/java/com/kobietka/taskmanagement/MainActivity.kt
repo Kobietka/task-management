@@ -20,10 +20,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.kobietka.taskmanagement.ui.screen.*
 import com.kobietka.taskmanagement.ui.theme.TaskManagementTheme
 import com.kobietka.taskmanagement.ui.util.Route
-import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
-import com.kobietka.taskmanagement.viewmodel.StatusChangeViewModel
-import com.kobietka.taskmanagement.viewmodel.TasksViewModel
-import com.kobietka.taskmanagement.viewmodel.TimeMeasureViewModel
+import com.kobietka.taskmanagement.viewmodel.*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private val tasksViewModel: TasksViewModel by viewModels()
     private val timeMeasureViewModel: TimeMeasureViewModel by viewModels()
     private val statusChangeViewModel: StatusChangeViewModel by viewModels()
+    private val projectDetailsViewModel: ProjectDetailsViewModel by viewModels()
 
     @ExperimentalMaterialApi
     @ExperimentalFoundationApi
@@ -54,7 +52,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     composable(Route.projectDetails, arguments = listOf(navArgument("id") { type = NavType.IntType })){
                         window.statusBarColor = MaterialTheme.colors.primary.toArgb()
-                        projectsViewModel.loadProjectData(
+                        projectDetailsViewModel.loadProjectData(
                             projectId = it.arguments?.getInt("id", -1)!!
                         )
                         statusChangeViewModel.loadStatusEventsData(
@@ -62,8 +60,8 @@ class MainActivity : AppCompatActivity() {
                         )
                         tasksViewModel.loadTaskStatusesData()
                         ProjectDetailsScreen(
-                            projectsViewModel = projectsViewModel,
                             tasksViewModel = tasksViewModel,
+                            projectDetailsViewModel = projectDetailsViewModel,
                             statusChangeViewModel = statusChangeViewModel,
                             navController = navController
                         )
