@@ -18,37 +18,42 @@ class UpdateTask
 
     @SuppressLint("CheckResult")
     fun execute(
-        oldTaskEntity: TaskEntity,
+        taskId: Int,
         name: String,
         description: String,
         newStatusId: Int,
         dueDate: String,
         onFinish: () -> Unit
     ){
-        taskRepository.insert(
-            taskEntity = oldTaskEntity.copy(
-                name = name,
-                description = description,
-                statusId = newStatusId,
-                dueDate = dueDate
-            )
-        ).observeOn(AndroidSchedulers.mainThread())
+        taskRepository.getById(id = taskId)
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
-            .subscribe {
-                if(newStatusId != oldTaskEntity.statusId){
-                    statusEventRepository.insert(
-                        statusEventEntity = StatusEventEntity(
-                            id = null,
-                            taskId = oldTaskEntity.id!!,
-                            fromStatus = oldTaskEntity.statusId,
-                            toStatus = newStatusId,
-                            projectId = oldTaskEntity.projectId,
-                            date = dateUtil.getCurrentDate()
-                        )
-                    ).observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .subscribe(onFinish)
-                } else onFinish()
+            .subscribe { loadedTask ->
+                taskRepository.insert(
+                    taskEntity = loadedTask.copy(
+                        name = name,
+                        description = description,
+                        statusId = newStatusId,
+                        dueDate = dueDate
+                    )
+                ).observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe {
+                        if(newStatusId != loadedTask.statusId){
+                            statusEventRepository.insert(
+                                statusEventEntity = StatusEventEntity(
+                                    id = null,
+                                    taskId = loadedTask.id!!,
+                                    fromStatus = loadedTask.statusId,
+                                    toStatus = newStatusId,
+                                    projectId = loadedTask.projectId,
+                                    date = dateUtil.getCurrentDate()
+                                )
+                            ).observeOn(AndroidSchedulers.mainThread())
+                                .subscribeOn(Schedulers.io())
+                                .subscribe(onFinish)
+                        } else onFinish()
+                    }
             }
     }
 
