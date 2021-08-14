@@ -697,7 +697,7 @@ fun StatusChip(statusName: String, taskSessions: List<TaskSessionEntity>){
                 end = 20.dp,
                 bottom = 10.dp
             ),
-            text = if(statusName == "Completed") { statusName + if(seconds >= 60) " ${seconds/60} minutes" else "" } else statusName,
+            text = if(statusName == "Completed") { statusName + if(seconds >= 60) " in ${seconds/60} minutes" else "" } else statusName,
             fontSize = 15.sp,
             fontWeight = FontWeight.Medium
         )
