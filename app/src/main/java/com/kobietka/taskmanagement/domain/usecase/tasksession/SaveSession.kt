@@ -12,13 +12,18 @@ class SaveSession
 @Inject constructor(private val taskSessionRepository: TaskSessionRepository,
                     private val dateUtil: DateUtil){
 
-    fun execute(taskId: Int, timeInSeconds: Int){
+    fun execute(
+        taskId: Int,
+        projectId: Int,
+        timeInSeconds: Int
+    ){
         taskSessionRepository.insert(
             TaskSessionEntity(
                 id = null,
                 timeInSeconds = timeInSeconds,
                 date = dateUtil.getCurrentDate(),
-                taskId = taskId
+                taskId = taskId,
+                projectId = projectId
             )
         ).observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())

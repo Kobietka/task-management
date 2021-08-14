@@ -36,7 +36,6 @@ import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
 import com.kobietka.taskmanagement.ui.theme.orange
 import com.kobietka.taskmanagement.ui.util.Route
 import com.kobietka.taskmanagement.viewmodel.ProjectDetailsViewModel
-import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
 import com.kobietka.taskmanagement.viewmodel.StatusChangeViewModel
 import com.kobietka.taskmanagement.viewmodel.TasksViewModel
 import kotlinx.coroutines.delay
@@ -57,6 +56,7 @@ fun ProjectDetailsScreen(
     val projectTasks = projectDetailsViewModel.projectTasks().observeAsState(initial = listOf())
     val tasksStatuses = tasksViewModel.taskStatuses().observeAsState(initial = listOf())
     val statusEvents = statusChangeViewModel.statusChanges().observeAsState(initial = listOf())
+    val taskSessions = projectDetailsViewModel.taskSessions().observeAsState(initial = listOf())
 
     val statusChangesVisible = remember { mutableStateOf(false) }
     val isFilterIconVisible = remember { mutableStateOf(true) }
@@ -152,7 +152,8 @@ fun ProjectDetailsScreen(
                                 topAppBarVisible = topAppBarVisible,
                                 navController = navController,
                                 statuses = tasksStatuses,
-                                tasks = projectTasks
+                                tasks = projectTasks,
+                                taskSessions = taskSessions
                             )
                         }
                     }
@@ -409,7 +410,8 @@ fun ProjectDetailsTaskList(
     topAppBarVisible: MutableState<Boolean>,
     navController: NavController,
     statuses: State<List<TaskStatusEntity>>,
-    tasks: State<List<TaskEntity>>
+    tasks: State<List<TaskEntity>>,
+    taskSessions: State<List<TaskSessionEntity>>
 ){
     when(taskListFilter.value){
         "no filter" -> {
@@ -417,7 +419,8 @@ fun ProjectDetailsTaskList(
                 topAppBarState = topAppBarVisible,
                 tasks = tasks.value.filter { !it.isArchived },
                 navController = navController,
-                statuses = statuses
+                statuses = statuses,
+                taskSessions = taskSessions
             )
         }
         "by status" -> {
@@ -425,7 +428,8 @@ fun ProjectDetailsTaskList(
                 topAppBarState = topAppBarVisible,
                 statuses = statuses,
                 tasks = tasks.value.filter { !it.isArchived },
-                navController = navController
+                navController = navController,
+                taskSessions = taskSessions
             )
         }
         "archived" -> {
@@ -433,7 +437,8 @@ fun ProjectDetailsTaskList(
                 topAppBarState = topAppBarVisible,
                 tasks = tasks.value.filter { it.isArchived },
                 navController = navController,
-                statuses = statuses
+                statuses = statuses,
+                taskSessions = taskSessions
             )
         }
         else -> {
@@ -444,7 +449,8 @@ fun ProjectDetailsTaskList(
                         statusId = taskStatus.id!!,
                         tasks = tasks.value.filter { !it.isArchived },
                         navController = navController,
-                        statuses = statuses
+                        statuses = statuses,
+                        taskSessions = taskSessions
                     )
                 }
             }
@@ -459,7 +465,8 @@ fun TaskList(
     topAppBarState: MutableState<Boolean>,
     tasks: List<TaskEntity>,
     navController: NavController,
-    statuses: State<List<TaskStatusEntity>>
+    statuses: State<List<TaskStatusEntity>>,
+    taskSessions: State<List<TaskSessionEntity>>
 ){
     val lazyListState = rememberLazyListState()
 
@@ -484,7 +491,8 @@ fun TaskList(
                 Task(
                     taskEntity = tasks[it],
                     navController = navController,
-                    statuses = statuses.value
+                    statuses = statuses.value,
+                    taskSessions = taskSessions.value.filter { session -> session.taskId == tasks[it].id }
                 )
             }
         }
@@ -498,7 +506,8 @@ fun TaskListByStatus(
     topAppBarState: MutableState<Boolean>,
     statuses: State<List<TaskStatusEntity>>,
     tasks: List<TaskEntity>,
-    navController: NavController
+    navController: NavController,
+    taskSessions: State<List<TaskSessionEntity>>
 ){
     val scrollState = rememberScrollState()
     topAppBarState.value = !scrollState.isScrollInProgress
@@ -533,7 +542,8 @@ fun TaskListByStatus(
                     Task(
                         taskEntity = it,
                         navController = navController,
-                        statuses = statuses.value
+                        statuses = statuses.value,
+                        taskSessions = taskSessions.value.filter { session -> session.taskId == it.id }
                     )
                 }
             }
@@ -579,7 +589,8 @@ fun TaskListWithOnlyOneStatus(
     statusId: Int,
     tasks: List<TaskEntity>,
     navController: NavController,
-    statuses: State<List<TaskStatusEntity>>
+    statuses: State<List<TaskStatusEntity>>,
+    taskSessions: State<List<TaskSessionEntity>>
 ){
     val filteredTasks = tasks.filter { task -> task.statusId == statusId }
     val lazyListState = rememberLazyListState()
@@ -606,7 +617,8 @@ fun TaskListWithOnlyOneStatus(
                     Task(
                         taskEntity = filteredTasks[it],
                         navController = navController,
-                        statuses = statuses.value
+                        statuses = statuses.value,
+                        taskSessions = taskSessions.value.filter { session -> session.taskId == tasks[it].id }
                     )
                 }
             }
@@ -620,7 +632,8 @@ fun TaskListWithOnlyOneStatus(
 fun Task(
     taskEntity: TaskEntity,
     navController: NavController,
-    statuses: List<TaskStatusEntity>
+    statuses: List<TaskStatusEntity>,
+    taskSessions: List<TaskSessionEntity>
 ){
     val status = statuses.first { status -> taskEntity.statusId == status.id }
 
@@ -655,7 +668,7 @@ fun Task(
                 fontWeight = FontWeight.Normal,
                 color = Color.Gray
             )
-            StatusChip(statusName = status.name, listOf())
+            StatusChip(statusName = status.name, taskSessions = taskSessions)
         }
     }
 }
@@ -684,7 +697,7 @@ fun StatusChip(statusName: String, taskSessions: List<TaskSessionEntity>){
                 end = 20.dp,
                 bottom = 10.dp
             ),
-            text = statusName + if(seconds >= 60) " ${seconds/60} minutes" else "",
+            text = if(statusName == "Completed") { statusName + if(seconds >= 60) " ${seconds/60} minutes" else "" } else statusName,
             fontSize = 15.sp,
             fontWeight = FontWeight.Medium
         )

@@ -70,9 +70,13 @@ class TimeMeasureViewModel
         timer.stop()
     }
 
-    fun saveSession(taskId: Int, timeInSeconds: Int){
+    fun saveSession(
+        taskId: Int,
+        projectId: Int,
+        timeInSeconds: Int){
         saveSession.execute(
             taskId = taskId,
+            projectId = projectId,
             timeInSeconds = timeInSeconds
         )
     }

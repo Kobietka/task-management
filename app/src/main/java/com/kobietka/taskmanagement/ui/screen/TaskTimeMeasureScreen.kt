@@ -155,7 +155,11 @@ fun TaskTimeMeasureScreen(
                             timerStarted.value = true
                         } else {
                             timeMeasureViewModel.pauseTimer()
-                            timeMeasureViewModel.saveSession(taskId.value, time.value)
+                            timeMeasureViewModel.saveSession(
+                                taskId = taskId.value,
+                                projectId = projectId.value,
+                                timeInSeconds = time.value
+                            )
                             if(switchEnabled.value)
                                 tasksViewModel.changeTaskStatusToCompleted(taskId.value)
                             navController.navigate(Route.projectDetailsRoute(projectId.value)) {
