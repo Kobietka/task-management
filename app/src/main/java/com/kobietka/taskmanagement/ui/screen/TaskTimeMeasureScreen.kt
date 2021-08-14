@@ -31,17 +31,22 @@ import com.kobietka.taskmanagement.viewmodel.TimeMeasureViewModel
 
 @ExperimentalAnimationApi
 @Composable
-fun TaskTimeMeasureScreen(taskId: Int, tasksViewModel: TasksViewModel, timeMeasureViewModel: TimeMeasureViewModel, navController: NavController){
-    val firstTime = remember { mutableStateOf(true) }
-    val taskName = remember { mutableStateOf("") }
-    val projectId = remember { mutableStateOf(0) }
+fun TaskTimeMeasureScreen(
+    tasksViewModel: TasksViewModel,
+    timeMeasureViewModel: TimeMeasureViewModel,
+    navController: NavController
+){
+    val taskName = timeMeasureViewModel.taskName().observeAsState(initial = "")
+    val projectId = timeMeasureViewModel.projectId().observeAsState(initial = 0)
+    val taskId = timeMeasureViewModel.taskId().observeAsState(initial = 0)
     val timeText = timeMeasureViewModel.timeText().observeAsState(initial = "00:00")
     val time = timeMeasureViewModel.time().observeAsState(initial = 0)
+    val sessions = timeMeasureViewModel.taskSessions().observeAsState(initial = listOf())
+
+    val firstTime = remember { mutableStateOf(true) }
     val timerStarted = remember { mutableStateOf(false) }
 
     val sessionsVisible = remember { mutableStateOf(false) }
-    val sessions = remember { mutableStateOf<List<TaskSessionEntity>>(listOf()) }
-
     val switchEnabled = remember { mutableStateOf(true) }
 
     if(firstTime.value){
@@ -49,42 +54,52 @@ fun TaskTimeMeasureScreen(taskId: Int, tasksViewModel: TasksViewModel, timeMeasu
         firstTime.value = false
     }
 
-    tasksViewModel.loadTask(
-        taskId = taskId,
-        onFinish = { task ->
-            taskName.value = task.name
-            projectId.value = task.projectId
-        }
-    )
-
-    timeMeasureViewModel.loadSessions(
-        taskId = taskId,
-        onFinish = {
-            sessions.value = it
-        }
-    )
-
     Scaffold(
         backgroundColor = MaterialTheme.colors.primary,
         topBar = {
             Column {
                 Row(
-                    Modifier
+                    modifier = Modifier
                         .padding(20.dp)
-                        .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween){
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ){
                     Column {
-                        Text(text = "Measure time of", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.Black)
-                        Text(text = taskName.value, fontSize = 20.sp, color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "Measure time of",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.Black
+                        )
+                        Text(
+                            text = taskName.value,
+                            fontSize = 20.sp,
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                     AnimatedVisibility(visible = sessions.value.isNotEmpty()) {
-                        Icon(modifier = Modifier
-                            .size(30.dp, 30.dp)
-                            .clickable { sessionsVisible.value = !sessionsVisible.value }, imageVector = Icons.Filled.History, contentDescription = "session history", tint = Color.Black)
+                        Icon(
+                            modifier = Modifier
+                                .size(30.dp, 30.dp)
+                                .clickable {
+                                    sessionsVisible.value = !sessionsVisible.value
+                                },
+                            imageVector = Icons.Filled.History,
+                            contentDescription = "session history",
+                            tint = Color.Black
+                        )
                     }
                 }
                 AnimatedVisibility(visible = sessionsVisible.value) {
                     Column(Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp)) {
-                        Text(text = "Past sessions", fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 18.sp)
+                        Text(
+                            text = "Past sessions",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            fontSize = 18.sp
+                        )
                         LazyColumn {
                             items(sessions.value.size){
                                 Session(sessionEntity = sessions.value[it])
@@ -95,19 +110,39 @@ fun TaskTimeMeasureScreen(taskId: Int, tasksViewModel: TasksViewModel, timeMeasu
             }
         },
         content = {
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
-                .background(Color.White), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceBetween) {
-                
-                Row(modifier = Modifier
-                    .padding(30.dp)
-                    .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = "Mark task as completed", color = Color.Black, fontSize = 18.sp, fontWeight = FontWeight.Medium)
-                    Switch(checked = switchEnabled.value, onCheckedChange = { switchEnabled.value = it }, colors = SwitchDefaults.colors(checkedThumbColor = indigo))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
+                    .background(Color.White),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(30.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Mark task as completed",
+                        color = Color.Black,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Switch(
+                        checked = switchEnabled.value,
+                        onCheckedChange = { switchEnabled.value = it },
+                        colors = SwitchDefaults.colors(checkedThumbColor = indigo)
+                    )
                 }
 
-                Text(text = timeText.value, color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 60.sp)
+                Text(
+                    text = timeText.value,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 60.sp
+                )
 
                 Button(
                     modifier = Modifier
@@ -120,8 +155,9 @@ fun TaskTimeMeasureScreen(taskId: Int, tasksViewModel: TasksViewModel, timeMeasu
                             timerStarted.value = true
                         } else {
                             timeMeasureViewModel.pauseTimer()
-                            timeMeasureViewModel.saveSession(taskId, time.value)
-                            if(switchEnabled.value) tasksViewModel.changeTaskStatusToCompleted(taskId)
+                            timeMeasureViewModel.saveSession(taskId.value, time.value)
+                            if(switchEnabled.value)
+                                tasksViewModel.changeTaskStatusToCompleted(taskId.value)
                             navController.navigate(Route.projectDetailsRoute(projectId.value)) {
                                 popUpTo(Route.projectDetails) {
                                     inclusive = true
@@ -133,7 +169,11 @@ fun TaskTimeMeasureScreen(taskId: Int, tasksViewModel: TasksViewModel, timeMeasu
                         backgroundColor = MaterialTheme.colors.secondary
                     )
                 ) {
-                    Text(if(timerStarted.value) "End session" else "Start session", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text(
+                        text = if(timerStarted.value) "End session" else "Start session",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp
+                    )
                 }
                 
             }
@@ -151,8 +191,18 @@ fun Session(sessionEntity: TaskSessionEntity){
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = sessionEntity.date, fontWeight = FontWeight.Medium, color = Color.Black, fontSize = 15.sp)
-        Text(text = "${sessionEntity.timeInSeconds/60} minutes", fontWeight = FontWeight.Medium, color = Color.Black, fontSize = 15.sp)
+        Text(
+            text = sessionEntity.date,
+            fontWeight = FontWeight.Medium,
+            color = Color.Black,
+            fontSize = 15.sp
+        )
+        Text(
+            text = "${sessionEntity.timeInSeconds/60} minutes",
+            fontWeight = FontWeight.Medium,
+            color = Color.Black,
+            fontSize = 15.sp
+        )
     }
 }
 

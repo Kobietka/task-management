@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             val navController = rememberNavController()
             TaskManagementTheme {
                 NavHost(navController = navController, startDestination = Route.main) {
-                    composable(Route.main){
+                    composable(route = Route.main){
                         window.statusBarColor = MaterialTheme.colors.primary.toArgb()
                         mainScreenViewModel.loadProjects()
                         MainScreen(
@@ -55,14 +55,17 @@ class MainActivity : AppCompatActivity() {
                             navController = navController
                         )
                     }
-                    composable(Route.createProject){
+                    composable(route = Route.createProject){
                         window.statusBarColor = Color.White.toArgb()
                         CreateProjectScreen(
                             projectsViewModel = projectsViewModel,
                             navController = navController
                         )
                     }
-                    composable(Route.projectDetails, arguments = listOf(navArgument("id") { type = NavType.IntType })){
+                    composable(
+                        route = Route.projectDetails,
+                        arguments = listOf(navArgument("id") { type = NavType.IntType })
+                    ){
                         window.statusBarColor = MaterialTheme.colors.primary.toArgb()
                         projectDetailsViewModel.loadProjectData(
                             projectId = it.arguments?.getInt("id", -1)!!
@@ -78,7 +81,10 @@ class MainActivity : AppCompatActivity() {
                             navController = navController
                         )
                     }
-                    composable(Route.createTask, arguments = listOf(navArgument("id") { type = NavType.IntType })){
+                    composable(
+                        route = Route.createTask,
+                        arguments = listOf(navArgument("id") { type = NavType.IntType })
+                    ){
                         window.statusBarColor = Color.White.toArgb()
                         createTasksViewModel.loadStatuses(
                             projectId = it.arguments?.getInt("id", -1)!!
@@ -92,7 +98,10 @@ class MainActivity : AppCompatActivity() {
                             }
                         )
                     }
-                    composable(Route.taskDetails, arguments = listOf(navArgument("id") { type = NavType.IntType })){
+                    composable(
+                        route = Route.taskDetails,
+                        arguments = listOf(navArgument("id") { type = NavType.IntType })
+                    ){
                         window.statusBarColor = Color.White.toArgb()
                         taskDetailsViewModel.loadTaskData(
                             taskId = it.arguments?.getInt("id", -1)!!
@@ -106,7 +115,10 @@ class MainActivity : AppCompatActivity() {
                             }
                         )
                     }
-                    composable(Route.editProject, arguments = listOf(navArgument("id") { type = NavType.IntType })){
+                    composable(
+                        route = Route.editProject,
+                        arguments = listOf(navArgument("id") { type = NavType.IntType })
+                    ){
                         window.statusBarColor = Color.White.toArgb()
                         editProjectViewModel.loadProjectData(
                             projectId = it.arguments?.getInt("id", -1)!!
@@ -117,10 +129,15 @@ class MainActivity : AppCompatActivity() {
                             navController = navController
                         )
                     }
-                    composable(Route.measureTime, arguments = listOf(navArgument("id") { type = NavType.IntType })){
+                    composable(
+                        route = Route.measureTime,
+                        arguments = listOf(navArgument("id") { type = NavType.IntType })
+                    ){
                         window.statusBarColor = MaterialTheme.colors.primary.toArgb()
+                        timeMeasureViewModel.loadTaskData(
+                            taskId = it.arguments?.getInt("id", -1)!!
+                        )
                         TaskTimeMeasureScreen(
-                            taskId = it.arguments?.getInt("id", -1)!!,
                             tasksViewModel = tasksViewModel,
                             timeMeasureViewModel = timeMeasureViewModel,
                             navController = navController
