@@ -19,6 +19,7 @@ import androidx.room.PrimaryKey
 data class TaskSessionEntity(
     @PrimaryKey(autoGenerate = true) val id: Int?,
     @ColumnInfo val taskId: Int,
+    @ColumnInfo val projectId: Int,
     @ColumnInfo val timeInSeconds: Int,
     @ColumnInfo val date: String
 )
