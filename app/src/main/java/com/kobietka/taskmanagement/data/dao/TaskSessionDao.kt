@@ -17,6 +17,9 @@ interface TaskSessionDao {
     @Query("select * from taskSession where taskId = :taskId")
     fun getAllByTaskId(taskId: Int): Maybe<List<TaskSessionEntity>>
 
+    @Query("select * from taskSession where projectId = :projectId")
+    fun getAllByProjectId(projectId: Int): Maybe<List<TaskSessionEntity>>
+
     @Query("delete from taskSession where id = :id")
     fun deleteById(id: Int): Completable
 

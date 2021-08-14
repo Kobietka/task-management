@@ -23,4 +23,8 @@ class TaskSessionRepositoryImpl
         return taskSessionDao.deleteById(id)
     }
 
+    override fun getAllByProjectId(projectId: Int): Maybe<List<TaskSessionEntity>> {
+        return taskSessionDao.getAllByProjectId(projectId)
+    }
+
 }
