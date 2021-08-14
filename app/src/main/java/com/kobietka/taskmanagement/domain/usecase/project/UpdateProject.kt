@@ -13,13 +13,14 @@ class UpdateProject
 
     @SuppressLint("CheckResult")
     fun execute(
-        oldProjectEntity: ProjectEntity,
+        projectId: Int,
         name: String,
         description: String,
         onFinish: () -> Unit
     ){
         projectRepository.insert(
-            projectEntity = oldProjectEntity.copy(
+            projectEntity = ProjectEntity(
+                id = projectId,
                 name = name,
                 description = description
             )

@@ -29,13 +29,13 @@ class ProjectsViewModel
     }
 
     fun updateProject(
-        oldProjectEntity: ProjectEntity,
+        projectId: Int,
         name: String,
         description: String,
         onFinish: () -> Unit
     ){
         updateProject.execute(
-            oldProjectEntity = oldProjectEntity,
+            projectId = projectId,
             name = name,
             description = description,
             onFinish = onFinish

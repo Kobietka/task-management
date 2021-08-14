@@ -8,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,34 +25,35 @@ import com.kobietka.taskmanagement.data.entity.ProjectEntity
 import com.kobietka.taskmanagement.ui.util.MultiLineTextField
 import com.kobietka.taskmanagement.ui.util.NormalTextField
 import com.kobietka.taskmanagement.ui.util.Route
+import com.kobietka.taskmanagement.viewmodel.EditProjectViewModel
 import com.kobietka.taskmanagement.viewmodel.ProjectsViewModel
 
 
 @ExperimentalComposeUiApi
 @Composable
-fun EditProjectScreen(projectId: Int, projectsViewModel: ProjectsViewModel, navController: NavController){
+fun EditProjectScreen(
+    editProjectViewModel: EditProjectViewModel,
+    projectsViewModel: ProjectsViewModel,
+    navController: NavController
+){
+    val projectName = editProjectViewModel.projectName().observeAsState(initial = "")
+    val projectDescription = editProjectViewModel.projectDescription().observeAsState(initial = "")
+    val projectId = editProjectViewModel.projectId().observeAsState(initial = 0)
+    val projectLoadingFinished = editProjectViewModel.loadingFinished().observeAsState(initial = false)
+
     val firstTime = remember { mutableStateOf(true) }
 
     val name = remember { mutableStateOf(TextFieldValue("")) }
     val nameError = remember { mutableStateOf(false) }
-
     val description = remember { mutableStateOf(TextFieldValue("")) }
     val descriptionError = remember { mutableStateOf(false) }
 
-    val project = remember { mutableStateOf<ProjectEntity?>(null) }
-
     val focusRequester = remember { FocusRequester() }
 
-    if(firstTime.value){
-        projectsViewModel.loadProject(
-            id = projectId,
-            onFinish = { projectEntity ->
-                name.value = TextFieldValue(projectEntity.name)
-                description.value = TextFieldValue(projectEntity.description)
-                project.value = projectEntity
-                firstTime.value = false
-            }
-        )
+    if(projectLoadingFinished.value && firstTime.value){
+        name.value = TextFieldValue(text = projectName.value)
+        description.value = TextFieldValue(text = projectDescription.value)
+        firstTime.value = false
     }
 
     Column {
@@ -63,10 +65,10 @@ fun EditProjectScreen(projectId: Int, projectsViewModel: ProjectsViewModel, navC
                     .width(35.dp)
                     .clickable {
                         projectsViewModel.deleteProject(
-                            projectId = projectId,
+                            projectId = projectId.value,
                             onFinish = {
-                                navController.navigate(Route.main){
-                                    popUpTo(Route.main){
+                                navController.navigate(Route.main) {
+                                    popUpTo(Route.main) {
                                         inclusive = true
                                     }
                                 }
@@ -82,7 +84,11 @@ fun EditProjectScreen(projectId: Int, projectsViewModel: ProjectsViewModel, navC
                 .padding(top = 70.dp, start = 25.dp, end = 25.dp, bottom = 70.dp)
                 .fillMaxWidth(), horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "Edit project", fontWeight = FontWeight.Bold, fontSize = 25.sp)
+            Text(
+                text = "Edit project",
+                fontWeight = FontWeight.Bold,
+                fontSize = 25.sp
+            )
         }
         Box(
             Modifier
@@ -91,9 +97,10 @@ fun EditProjectScreen(projectId: Int, projectsViewModel: ProjectsViewModel, navC
                 .background(MaterialTheme.colors.primary)
         ) {
             Column(
-                Modifier
+                modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 50.dp, start = 25.dp, end = 25.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    .padding(top = 50.dp, start = 25.dp, end = 25.dp),
+                horizontalAlignment = Alignment.CenterHorizontally) {
 
                 NormalTextField(
                     state = name,
@@ -122,7 +129,7 @@ fun EditProjectScreen(projectId: Int, projectsViewModel: ProjectsViewModel, navC
                     onClick = {
                         if(!nameError.value && !descriptionError.value){
                             projectsViewModel.updateProject(
-                                oldProjectEntity = project.value!!,
+                                projectId = projectId.value,
                                 name = name.value.text,
                                 description = description.value.text,
                                 onFinish = {
@@ -139,11 +146,13 @@ fun EditProjectScreen(projectId: Int, projectsViewModel: ProjectsViewModel, navC
                         backgroundColor = MaterialTheme.colors.secondary
                     ))
                 {
-                    Text(text = "Save", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text(
+                        text = "Save",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp
+                    )
                 }
-
             }
         }
-
     }
 }
