@@ -28,7 +28,6 @@ class TimeMeasureViewModel
     private val _taskSessions = MutableLiveData<List<TaskSessionEntity>>(listOf())
     private val _taskId = MutableLiveData(0)
     private val _projectId = MutableLiveData(0)
-    private val _loadingFinished = MutableLiveData(false)
     private val timer = Timer().onTick { seconds ->
         _timeText.value = convertTime(seconds)
         _time.value = seconds
@@ -39,11 +38,9 @@ class TimeMeasureViewModel
     fun taskSessions(): LiveData<List<TaskSessionEntity>> = _taskSessions
     fun taskId(): LiveData<Int> = _taskId
     fun projectId(): LiveData<Int> = _projectId
-    fun loadingFinished(): LiveData<Boolean> = _loadingFinished
     fun time(): LiveData<Int> = _time
 
     fun loadTaskData(taskId: Int){
-        _loadingFinished.value = false
         loadTask.execute(
             taskId = taskId,
             onFinish = { loadedTask ->
@@ -54,7 +51,6 @@ class TimeMeasureViewModel
                     taskId = taskId,
                     onFinish = { loadedSessions ->
                         _taskSessions.value = loadedSessions
-                        _loadingFinished.value = true
                     }
                 )
             }
@@ -78,13 +74,6 @@ class TimeMeasureViewModel
         saveSession.execute(
             taskId = taskId,
             timeInSeconds = timeInSeconds
-        )
-    }
-
-    fun loadSessions(taskId: Int, onFinish: (List<TaskSessionEntity>) -> Unit){
-        loadSessions.execute(
-            taskId = taskId,
-            onFinish = onFinish
         )
     }
 
