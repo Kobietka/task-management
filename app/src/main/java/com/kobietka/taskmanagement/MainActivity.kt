@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private val mainScreenViewModel: MainScreenViewModel by viewModels()
     private val taskDetailsViewModel: TaskDetailsViewModel by viewModels()
     private val createTasksViewModel: CreateTaskViewModel by viewModels()
+    private val editProjectViewModel: EditProjectViewModel by viewModels()
 
     @ExperimentalMaterialApi
     @ExperimentalFoundationApi
@@ -107,8 +108,11 @@ class MainActivity : AppCompatActivity() {
                     }
                     composable(Route.editProject, arguments = listOf(navArgument("id") { type = NavType.IntType })){
                         window.statusBarColor = Color.White.toArgb()
+                        editProjectViewModel.loadProjectData(
+                            projectId = it.arguments?.getInt("id", -1)!!
+                        )
                         EditProjectScreen(
-                            projectId = it.arguments?.getInt("id", -1)!!,
+                            editProjectViewModel = editProjectViewModel,
                             projectsViewModel = projectsViewModel,
                             navController = navController
                         )
