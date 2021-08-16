@@ -27,7 +27,8 @@ class TasksViewModel
                     private val completeTask: CompleteTask,
                     private val deleteTask: DeleteTask,
                     private val loadTask: LoadTask,
-                    private val insertTask: InsertTask): ViewModel() {
+                    private val insertTask: InsertTask,
+                    private val unarchiveTask: UnarchiveTask): ViewModel() {
 
     private val _taskStatuses = MutableLiveData<List<TaskStatusEntity>>(listOf())
 
@@ -74,6 +75,13 @@ class TasksViewModel
             description = description,
             statusId = statusId,
             dueDate = dueDate,
+            onFinish = onFinish
+        )
+    }
+
+    fun unarchiveTask(taskId: Int, onFinish: () -> Unit){
+        unarchiveTask.execute(
+            taskId = taskId,
             onFinish = onFinish
         )
     }

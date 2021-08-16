@@ -25,6 +25,7 @@ class TaskDetailsViewModel
     private val _taskDueDate = MutableLiveData("Due date")
     private val _loadingFinished = MutableLiveData(false)
     private val _projectId = MutableLiveData(0)
+    private val _isTaskArchived = MutableLiveData(false)
 
     fun taskStatuses(): LiveData<List<TaskStatusEntity>> = _taskStatuses
     fun taskId(): LiveData<Int> = _taskId
@@ -35,6 +36,7 @@ class TaskDetailsViewModel
     fun taskDueDate(): LiveData<String> = _taskDueDate
     fun loadingFinished(): LiveData<Boolean> = _loadingFinished
     fun projectId(): LiveData<Int> = _projectId
+    fun isTaskArchived(): LiveData<Boolean> = _isTaskArchived
 
     fun loadTaskData(taskId: Int){
         _taskId.value = taskId
@@ -47,6 +49,7 @@ class TaskDetailsViewModel
                 _taskStatusId.value = loadedTask.statusId
                 _taskDueDate.value = loadedTask.dueDate
                 _projectId.value = loadedTask.projectId
+                _isTaskArchived.value = loadedTask.isArchived
                 loadTaskStatuses.execute { loadedStatuses ->
                     _taskStatuses.value = loadedStatuses
                     _loadingFinished.value = true

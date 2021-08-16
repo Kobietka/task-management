@@ -8,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Unarchive
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +47,7 @@ fun TaskDetailsScreen(
     val taskId = taskDetailsViewModel.taskId().observeAsState(initial = 0)
     val projectId = taskDetailsViewModel.projectId().observeAsState(initial = 0)
     val loadingFinished = taskDetailsViewModel.loadingFinished().observeAsState(initial = false)
+    val isTaskArchived = taskDetailsViewModel.isTaskArchived().observeAsState(initial = false)
 
     val firstTime = remember { mutableStateOf(true) }
     val menuExpanded = remember { mutableStateOf(false) }
@@ -86,26 +88,49 @@ fun TaskDetailsScreen(
 
     Column {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End){
-            Icon(
-                modifier = Modifier
-                    .padding(end = 10.dp, top = 20.dp, bottom = 20.dp)
-                    .height(35.dp)
-                    .width(35.dp)
-                    .clickable {
-                        tasksViewModel.archiveTask(
-                            taskId = taskId.value,
-                            onFinish = {
-                                navController.navigate(Route.projectDetailsRoute(projectId.value)) {
-                                    popUpTo(Route.projectDetails) {
-                                        inclusive = true
+            if(isTaskArchived.value){
+                Icon(
+                    modifier = Modifier
+                        .padding(end = 10.dp, top = 20.dp, bottom = 20.dp)
+                        .height(35.dp)
+                        .width(35.dp)
+                        .clickable {
+                            tasksViewModel.unarchiveTask(
+                                taskId = taskId.value,
+                                onFinish = {
+                                    navController.navigate(Route.projectDetailsRoute(projectId.value)) {
+                                        popUpTo(Route.projectDetails) {
+                                            inclusive = true
+                                        }
                                     }
                                 }
-                            }
-                        )
-                    },
-                imageVector = Icons.Filled.Archive,
-                contentDescription = "archive task"
-            )
+                            )
+                        },
+                    imageVector = Icons.Filled.Unarchive,
+                    contentDescription = "unarchive task"
+                )
+            } else {
+                Icon(
+                    modifier = Modifier
+                        .padding(end = 10.dp, top = 20.dp, bottom = 20.dp)
+                        .height(35.dp)
+                        .width(35.dp)
+                        .clickable {
+                            tasksViewModel.archiveTask(
+                                taskId = taskId.value,
+                                onFinish = {
+                                    navController.navigate(Route.projectDetailsRoute(projectId.value)) {
+                                        popUpTo(Route.projectDetails) {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            )
+                        },
+                    imageVector = Icons.Filled.Archive,
+                    contentDescription = "archive task"
+                )
+            }
             Icon(
                 modifier = Modifier
                     .padding(20.dp)
