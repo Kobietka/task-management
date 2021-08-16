@@ -10,3 +10,4 @@ val Teal200 = Color(0xFF03DAC5)
 
 val orange = Color(0xFFFFECB3)
 val indigo = Color(0xFF9fa8da)
+val green = Color(0xFF00e676)
