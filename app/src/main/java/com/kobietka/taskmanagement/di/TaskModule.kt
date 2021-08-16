@@ -66,4 +66,9 @@ class TaskModule {
         )
     }
 
+    @Provides
+    fun provideUnarchiveTask(taskRepository: TaskRepository): UnarchiveTask {
+        return UnarchiveTask(taskRepository = taskRepository)
+    }
+
 }
