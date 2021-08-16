@@ -20,13 +20,14 @@ class ProjectDetailsViewModel
     private val _projectName = MutableLiveData("")
     private val _projectDescription = MutableLiveData("")
     private val _projectTasks = MutableLiveData<List<TaskEntity>>(listOf())
+    private val _projectFilteredTasks = MutableLiveData<List<TaskEntity>>(listOf())
     private val _projectId = MutableLiveData(0)
     private val _projectDetailsLoadingFinished = MutableLiveData(false)
     private val _taskSessions = MutableLiveData<List<TaskSessionEntity>>(listOf())
 
     fun projectName(): LiveData<String> = _projectName
     fun projectDescription(): LiveData<String> = _projectDescription
-    fun projectTasks(): LiveData<List<TaskEntity>> = _projectTasks
+    fun projectFilteredTasks(): LiveData<List<TaskEntity>> = _projectFilteredTasks
     fun projectId(): LiveData<Int> = _projectId
     fun loadingFinished(): LiveData<Boolean> = _projectDetailsLoadingFinished
     fun taskSessions(): LiveData<List<TaskSessionEntity>> = _taskSessions
@@ -40,6 +41,7 @@ class ProjectDetailsViewModel
                 _projectName.value = projectEntity.name
                 _projectDescription.value = projectEntity.description
                 _projectTasks.value = tasks
+                _projectFilteredTasks.value = tasks
                 loadSessionsForProject.execute(
                     projectId = projectId,
                     onFinish = { loadedSessions ->
@@ -49,6 +51,17 @@ class ProjectDetailsViewModel
                 )
             }
         )
+    }
+
+    fun filterTasks(text: String){
+        if(text.isEmpty()) _projectFilteredTasks.value = _projectTasks.value
+        else {
+            val filteredTasks = mutableListOf<TaskEntity>()
+            _projectTasks.value?.forEach { task ->
+                if(task.name.contains(text)) filteredTasks.add(task)
+            }
+            _projectFilteredTasks.value = filteredTasks
+        }
     }
 
 }

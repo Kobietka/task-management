@@ -2,6 +2,7 @@ package com.kobietka.taskmanagement.ui.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -11,7 +12,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.FilterAlt
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.List
@@ -25,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,6 +37,7 @@ import com.kobietka.taskmanagement.data.entity.StatusEventEntity
 import com.kobietka.taskmanagement.data.entity.TaskEntity
 import com.kobietka.taskmanagement.data.entity.TaskSessionEntity
 import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
+import com.kobietka.taskmanagement.ui.theme.indigo
 import com.kobietka.taskmanagement.ui.theme.orange
 import com.kobietka.taskmanagement.ui.util.Route
 import com.kobietka.taskmanagement.viewmodel.ProjectDetailsViewModel
@@ -53,7 +58,7 @@ fun ProjectDetailsScreen(
     val projectDescription = projectDetailsViewModel.projectDescription().observeAsState(initial = "")
     val projectDescriptionVisible = remember { mutableStateOf(false) }
     val projectId = projectDetailsViewModel.projectId().observeAsState(initial = 0)
-    val projectTasks = projectDetailsViewModel.projectTasks().observeAsState(initial = listOf())
+    val projectTasks = projectDetailsViewModel.projectFilteredTasks().observeAsState(initial = listOf())
     val tasksStatuses = tasksViewModel.taskStatuses().observeAsState(initial = listOf())
     val statusEvents = statusChangeViewModel.statusChanges().observeAsState(initial = listOf())
     val taskSessions = projectDetailsViewModel.taskSessions().observeAsState(initial = listOf())
@@ -65,9 +70,13 @@ fun ProjectDetailsScreen(
     val taskListFilter = remember { mutableStateOf("no filter") }
     val filterMenuExpanded = remember { mutableStateOf(false) }
     val topAppBarVisible = remember { mutableStateOf(true) }
+    val isTaskFiltering = remember { mutableStateOf(false) }
 
     val loadingFinished = projectDetailsViewModel.loadingFinished().observeAsState(initial = false)
     val isUiVisible = remember { mutableStateOf(false) }
+
+    val labelHeight: Dp by animateDpAsState(targetValue = if (!isTaskFiltering.value) 90.dp else 120.dp)
+
 
     LaunchedEffect(key1 = 1, block = {
         while (!loadingFinished.value){
@@ -124,13 +133,20 @@ fun ProjectDetailsScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(90.dp),
+                                .height(labelHeight),
                             backgroundColor = MaterialTheme.colors.secondary,
                             elevation = 20.dp) {
                             ProjectDetailsTaskLabel(
                                 tasksLabel = tasksLabel,
                                 filterMenuExpanded = filterMenuExpanded,
-                                isFilterIconVisible = isFilterIconVisible
+                                isFilterIconVisible = isFilterIconVisible,
+                                isTaskFiltering = isTaskFiltering,
+                                onFilterValueChanged = { value ->
+                                    projectDetailsViewModel.filterTasks(value)
+                                },
+                                onFilterCancel = {
+                                    projectDetailsViewModel.filterTasks("")
+                                }
                             )
                             ProjectDetailsFilterDropdownMenu(
                                 filterMenuExpanded = filterMenuExpanded,
@@ -555,28 +571,82 @@ fun TaskListByStatus(
 fun ProjectDetailsTaskLabel(
     tasksLabel: MutableState<String>,
     filterMenuExpanded: MutableState<Boolean>,
-    isFilterIconVisible: MutableState<Boolean>
+    isFilterIconVisible: MutableState<Boolean>,
+    isTaskFiltering: MutableState<Boolean>,
+    onFilterValueChanged: (String) -> Unit,
+    onFilterCancel: () -> Unit
 ){
-    Row(
-        modifier = Modifier.padding(top = 32.dp, start = 20.dp, end = 20.dp),
-        horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(
-            text = tasksLabel.value,
-            fontSize = 19.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-        if(isFilterIconVisible.value){
+    val filterValue = remember { mutableStateOf("") }
+
+    if(isTaskFiltering.value){
+        Row(
+            modifier = Modifier.padding(top = 32.dp, start = 20.dp, end = 20.dp, bottom = 32.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically) {
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .padding(end = 10.dp),
+                value = filterValue.value,
+                onValueChange = { new ->
+                    onFilterValueChanged(new.trim())
+                    filterValue.value = new
+                },
+                label = {
+                    Text(text = "Search")
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    focusedLabelColor = indigo
+                )
+            )
             Icon(
                 modifier = Modifier
                     .size(30.dp, 30.dp)
                     .clickable {
-                        filterMenuExpanded.value = !filterMenuExpanded.value
+                        isTaskFiltering.value = false
+                        filterValue.value = ""
+                        onFilterCancel()
                     },
-                imageVector = Icons.Filled.FilterAlt,
-                contentDescription = "filter",
+                imageVector = Icons.Filled.Cancel,
+                contentDescription = "cancel",
                 tint = Color.Black
             )
+        }
+    } else {
+        Row(
+            modifier = Modifier.padding(top = 32.dp, start = 20.dp, end = 20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(
+                text = tasksLabel.value,
+                fontSize = 19.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            if(isFilterIconVisible.value){
+                Row {
+                    Icon(
+                        modifier = Modifier
+                            .padding(end = 20.dp)
+                            .size(30.dp, 30.dp)
+                            .clickable {
+                                isTaskFiltering.value = true
+                            },
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = "search",
+                        tint = Color.Black
+                    )
+                    Icon(
+                        modifier = Modifier
+                            .size(30.dp, 30.dp)
+                            .clickable {
+                                filterMenuExpanded.value = !filterMenuExpanded.value
+                            },
+                        imageVector = Icons.Filled.FilterAlt,
+                        contentDescription = "filter",
+                        tint = Color.Black
+                    )
+                }
+            }
         }
     }
 }
@@ -675,8 +745,8 @@ fun Task(
 
 @Composable
 fun StatusChip(statusName: String, taskSessions: List<TaskSessionEntity>){
-    val seconds = taskSessions.fold(0) {
-            acc, taskSessionEntity -> acc + taskSessionEntity.timeInSeconds
+    val seconds = taskSessions.fold(0) { acc, taskSessionEntity ->
+        acc + taskSessionEntity.timeInSeconds
     }
     Column(
         modifier = Modifier
@@ -697,7 +767,9 @@ fun StatusChip(statusName: String, taskSessions: List<TaskSessionEntity>){
                 end = 20.dp,
                 bottom = 10.dp
             ),
-            text = if(statusName == "Completed") { statusName + if(seconds >= 60) " in ${seconds/60} minutes" else "" } else statusName,
+            text = if(statusName == "Completed") {
+                statusName + if(seconds >= 60) " in ${seconds/60} minutes" else ""
+            } else statusName,
             fontSize = 15.sp,
             fontWeight = FontWeight.Medium
         )
