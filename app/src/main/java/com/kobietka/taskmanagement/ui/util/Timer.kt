@@ -30,6 +30,8 @@ class Timer {
         timerRunning = false
     }
 
+    fun isTimerRunning(): Boolean = timerRunning
+
     fun onTick(tick: (Int) -> Unit): Timer {
         this.tick = tick
         return this
