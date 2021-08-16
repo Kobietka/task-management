@@ -13,7 +13,7 @@ import com.kobietka.taskmanagement.data.entity.*
         TaskSessionEntity::class,
         StatusEventEntity::class
     ],
-    version = 19
+    version = 21
 )
 abstract class Database : RoomDatabase() {
     abstract fun projectDao(): ProjectDao
