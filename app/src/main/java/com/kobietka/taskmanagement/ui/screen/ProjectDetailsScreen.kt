@@ -52,7 +52,8 @@ fun ProjectDetailsScreen(
     tasksViewModel: TasksViewModel,
     projectDetailsViewModel: ProjectDetailsViewModel,
     statusChangeViewModel: StatusChangeViewModel,
-    navController: NavController
+    navController: NavController,
+    isMeasuringTimeBlocked: Boolean
 ){
     val projectName = projectDetailsViewModel.projectName().observeAsState(initial = "")
     val projectDescription = projectDetailsViewModel.projectDescription().observeAsState(initial = "")
@@ -76,7 +77,6 @@ fun ProjectDetailsScreen(
     val isUiVisible = remember { mutableStateOf(false) }
 
     val labelHeight: Dp by animateDpAsState(targetValue = if (!isTaskFiltering.value) 90.dp else 120.dp)
-
 
     LaunchedEffect(key1 = 1, block = {
         while (!loadingFinished.value){
@@ -169,7 +169,8 @@ fun ProjectDetailsScreen(
                                 navController = navController,
                                 statuses = tasksStatuses,
                                 tasks = projectTasks,
-                                taskSessions = taskSessions
+                                taskSessions = taskSessions,
+                                isMeasuringTimeBlocked = isMeasuringTimeBlocked
                             )
                         }
                     }
@@ -427,7 +428,8 @@ fun ProjectDetailsTaskList(
     navController: NavController,
     statuses: State<List<TaskStatusEntity>>,
     tasks: State<List<TaskEntity>>,
-    taskSessions: State<List<TaskSessionEntity>>
+    taskSessions: State<List<TaskSessionEntity>>,
+    isMeasuringTimeBlocked: Boolean
 ){
     when(taskListFilter.value){
         "no filter" -> {
@@ -436,7 +438,8 @@ fun ProjectDetailsTaskList(
                 tasks = tasks.value.filter { !it.isArchived },
                 navController = navController,
                 statuses = statuses,
-                taskSessions = taskSessions
+                taskSessions = taskSessions,
+                isMeasuringTimeBlocked = isMeasuringTimeBlocked
             )
         }
         "by status" -> {
@@ -445,7 +448,8 @@ fun ProjectDetailsTaskList(
                 statuses = statuses,
                 tasks = tasks.value.filter { !it.isArchived },
                 navController = navController,
-                taskSessions = taskSessions
+                taskSessions = taskSessions,
+                isMeasuringTimeBlocked = isMeasuringTimeBlocked
             )
         }
         "archived" -> {
@@ -454,7 +458,8 @@ fun ProjectDetailsTaskList(
                 tasks = tasks.value.filter { it.isArchived },
                 navController = navController,
                 statuses = statuses,
-                taskSessions = taskSessions
+                taskSessions = taskSessions,
+                isMeasuringTimeBlocked = isMeasuringTimeBlocked
             )
         }
         else -> {
@@ -466,7 +471,8 @@ fun ProjectDetailsTaskList(
                         tasks = tasks.value.filter { !it.isArchived },
                         navController = navController,
                         statuses = statuses,
-                        taskSessions = taskSessions
+                        taskSessions = taskSessions,
+                        isMeasuringTimeBlocked = isMeasuringTimeBlocked
                     )
                 }
             }
@@ -482,7 +488,8 @@ fun TaskList(
     tasks: List<TaskEntity>,
     navController: NavController,
     statuses: State<List<TaskStatusEntity>>,
-    taskSessions: State<List<TaskSessionEntity>>
+    taskSessions: State<List<TaskSessionEntity>>,
+    isMeasuringTimeBlocked: Boolean
 ){
     val lazyListState = rememberLazyListState()
 
@@ -508,7 +515,8 @@ fun TaskList(
                     taskEntity = tasks[it],
                     navController = navController,
                     statuses = statuses.value,
-                    taskSessions = taskSessions.value.filter { session -> session.taskId == tasks[it].id }
+                    taskSessions = taskSessions.value.filter { session -> session.taskId == tasks[it].id },
+                    isMeasuringTimeBlocked = isMeasuringTimeBlocked
                 )
             }
         }
@@ -523,7 +531,8 @@ fun TaskListByStatus(
     statuses: State<List<TaskStatusEntity>>,
     tasks: List<TaskEntity>,
     navController: NavController,
-    taskSessions: State<List<TaskSessionEntity>>
+    taskSessions: State<List<TaskSessionEntity>>,
+    isMeasuringTimeBlocked: Boolean
 ){
     val scrollState = rememberScrollState()
     topAppBarState.value = !scrollState.isScrollInProgress
@@ -559,7 +568,8 @@ fun TaskListByStatus(
                         taskEntity = it,
                         navController = navController,
                         statuses = statuses.value,
-                        taskSessions = taskSessions.value.filter { session -> session.taskId == it.id }
+                        taskSessions = taskSessions.value.filter { session -> session.taskId == it.id },
+                        isMeasuringTimeBlocked = isMeasuringTimeBlocked
                     )
                 }
             }
@@ -660,7 +670,8 @@ fun TaskListWithOnlyOneStatus(
     tasks: List<TaskEntity>,
     navController: NavController,
     statuses: State<List<TaskStatusEntity>>,
-    taskSessions: State<List<TaskSessionEntity>>
+    taskSessions: State<List<TaskSessionEntity>>,
+    isMeasuringTimeBlocked: Boolean
 ){
     val filteredTasks = tasks.filter { task -> task.statusId == statusId }
     val lazyListState = rememberLazyListState()
@@ -688,7 +699,8 @@ fun TaskListWithOnlyOneStatus(
                         taskEntity = filteredTasks[it],
                         navController = navController,
                         statuses = statuses.value,
-                        taskSessions = taskSessions.value.filter { session -> session.taskId == tasks[it].id }
+                        taskSessions = taskSessions.value.filter { session -> session.taskId == tasks[it].id },
+                        isMeasuringTimeBlocked = isMeasuringTimeBlocked
                     )
                 }
             }
@@ -703,7 +715,8 @@ fun Task(
     taskEntity: TaskEntity,
     navController: NavController,
     statuses: List<TaskStatusEntity>,
-    taskSessions: List<TaskSessionEntity>
+    taskSessions: List<TaskSessionEntity>,
+    isMeasuringTimeBlocked: Boolean
 ){
     val status = statuses.first { status -> taskEntity.statusId == status.id }
 
@@ -713,7 +726,7 @@ fun Task(
             interactionSource = remember { MutableInteractionSource() },
             indication = rememberRipple(),
             onClick = { navController.navigate(Route.taskDetailsRoute(taskEntity.id!!)) },
-            onLongClick = { navController.navigate(Route.measureTimeRoute(taskEntity.id!!)) }
+            onLongClick = { if(!isMeasuringTimeBlocked) navController.navigate(Route.measureTimeRoute(taskEntity.id!!)) }
         )) {
         Column(modifier = Modifier
             .padding(20.dp)

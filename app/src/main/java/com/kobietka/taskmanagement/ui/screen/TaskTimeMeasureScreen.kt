@@ -42,15 +42,16 @@ fun TaskTimeMeasureScreen(
     val timeText = timeMeasureViewModel.timeText().observeAsState(initial = "00:00")
     val time = timeMeasureViewModel.time().observeAsState(initial = 0)
     val sessions = timeMeasureViewModel.taskSessions().observeAsState(initial = listOf())
+    val timerRunning = timeMeasureViewModel.isTimerRunning().observeAsState(initial = false)
+    val loadingFinished = timeMeasureViewModel.isLoadingFinished().observeAsState(initial = false)
 
     val firstTime = remember { mutableStateOf(true) }
-    val timerStarted = remember { mutableStateOf(false) }
 
     val sessionsVisible = remember { mutableStateOf(false) }
     val switchEnabled = remember { mutableStateOf(true) }
 
-    if(firstTime.value){
-        timeMeasureViewModel.resetTimer()
+    if(firstTime.value && loadingFinished.value){
+        if(!timerRunning.value) timeMeasureViewModel.resetTimer()
         firstTime.value = false
     }
 
@@ -150,9 +151,8 @@ fun TaskTimeMeasureScreen(
                         .fillMaxWidth()
                         .height(60.dp),
                     onClick = {
-                        if(!timerStarted.value) {
-                            timeMeasureViewModel.startTimer()
-                            timerStarted.value = true
+                        if(!timerRunning.value) {
+                            timeMeasureViewModel.startTimer(taskId = taskId.value)
                         } else {
                             timeMeasureViewModel.pauseTimer()
                             timeMeasureViewModel.saveSession(
@@ -160,9 +160,18 @@ fun TaskTimeMeasureScreen(
                                 projectId = projectId.value,
                                 timeInSeconds = time.value
                             )
-                            if(switchEnabled.value)
-                                tasksViewModel.changeTaskStatusToCompleted(taskId.value)
-                            navController.navigate(Route.projectDetailsRoute(projectId.value)) {
+                            if(switchEnabled.value){
+                                tasksViewModel.changeTaskStatusToCompleted(
+                                    taskId = taskId.value,
+                                    onFinish = {
+                                        navController.navigate(Route.projectDetailsRoute(projectId.value)) {
+                                            popUpTo(Route.projectDetails) {
+                                                inclusive = true
+                                            }
+                                        }
+                                    }
+                                )
+                            } else navController.navigate(Route.projectDetailsRoute(projectId.value)) {
                                 popUpTo(Route.projectDetails) {
                                     inclusive = true
                                 }
@@ -174,7 +183,7 @@ fun TaskTimeMeasureScreen(
                     )
                 ) {
                     Text(
-                        text = if(timerStarted.value) "End session" else "Start session",
+                        text = if(timerRunning.value) "End session" else "Start session",
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp
                     )

@@ -1,7 +1,6 @@
 package com.kobietka.taskmanagement.viewmodel
 
 
-import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,13 +8,7 @@ import com.kobietka.taskmanagement.data.entity.TaskEntity
 import com.kobietka.taskmanagement.data.entity.TaskStatusEntity
 import com.kobietka.taskmanagement.domain.usecase.task.*
 import com.kobietka.taskmanagement.domain.usecase.taskstatus.LoadTaskStatuses
-import com.kobietka.taskmanagement.repository.inter.TaskRepository
-import com.kobietka.taskmanagement.repository.inter.TaskStatusRepository
-import com.kobietka.taskmanagement.ui.util.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 
@@ -58,8 +51,14 @@ class TasksViewModel
        )
     }
 
-    fun changeTaskStatusToCompleted(taskId: Int){
-        completeTask.execute(taskId = taskId)
+    fun changeTaskStatusToCompleted(
+        taskId: Int,
+        onFinish: () -> Unit
+    ){
+        completeTask.execute(
+            taskId = taskId,
+            onFinish = onFinish
+        )
     }
 
     fun insertTask(

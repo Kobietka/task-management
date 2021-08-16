@@ -28,6 +28,11 @@ class TimeMeasureViewModel
     private val _taskSessions = MutableLiveData<List<TaskSessionEntity>>(listOf())
     private val _taskId = MutableLiveData(0)
     private val _projectId = MutableLiveData(0)
+
+    private val _isTimerRunning = MutableLiveData(false)
+    private val _timerRunningForTask = MutableLiveData(0)
+
+    private val _isLoadingFinished = MutableLiveData(false)
     private val timer = Timer().onTick { seconds ->
         _timeText.value = convertTime(seconds)
         _time.value = seconds
@@ -39,6 +44,9 @@ class TimeMeasureViewModel
     fun taskId(): LiveData<Int> = _taskId
     fun projectId(): LiveData<Int> = _projectId
     fun time(): LiveData<Int> = _time
+    fun isTimerRunning(): LiveData<Boolean> = _isTimerRunning
+    fun timerRunningForTask(): LiveData<Int> = _timerRunningForTask
+    fun isLoadingFinished(): LiveData<Boolean> = _isLoadingFinished
 
     fun loadTaskData(taskId: Int){
         loadTask.execute(
@@ -51,23 +59,28 @@ class TimeMeasureViewModel
                     taskId = taskId,
                     onFinish = { loadedSessions ->
                         _taskSessions.value = loadedSessions
+                        _isLoadingFinished.value = true
                     }
                 )
             }
         )
     }
 
-    fun startTimer(){
+    fun startTimer(taskId: Int){
         timer.start()
+        _isTimerRunning.value = timer.isTimerRunning()
+        _timerRunningForTask.value = taskId
     }
 
     fun resetTimer(){
         _timeText.value = convertTime(0)
         timer.stop()
+        _isTimerRunning.value = timer.isTimerRunning()
     }
 
     fun pauseTimer(){
         timer.stop()
+        _isTimerRunning.value = timer.isTimerRunning()
     }
 
     fun saveSession(
