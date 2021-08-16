@@ -18,7 +18,7 @@ class CompleteTask
                     private val dateUtil: DateUtil){
 
     @SuppressLint("CheckResult")
-    fun execute(taskId: Int){
+    fun execute(taskId: Int, onFinish: () -> Unit){
         taskStatusRepository.getAll()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
@@ -44,7 +44,7 @@ class CompleteTask
                                         )
                                     ).observeOn(AndroidSchedulers.mainThread())
                                         .subscribeOn(Schedulers.io())
-                                        .subscribe()
+                                        .subscribe(onFinish)
                                 }
                             }
                     }
