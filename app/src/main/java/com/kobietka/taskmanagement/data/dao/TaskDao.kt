@@ -25,6 +25,9 @@ interface TaskDao {
     @Query("delete from task where projectId = :projectId and id = :taskId")
     fun deleteFromProjectByProjectId(projectId: Int, taskId: Int): Completable
 
+    @Query("delete from task where projectId = :projectId")
+    fun deleteAllTasksFromProject(projectId: Int): Completable
+
     @Query("select * from task where id = :id")
     fun getById(id: Int): Maybe<TaskEntity>
 

@@ -13,4 +13,5 @@ interface TaskRepository {
     fun getById(id: Int): Maybe<TaskEntity>
     fun deleteFromProjectByProjectId(projectId: Int, taskId: Int): Completable
     fun changeArchivedStatus(taskId: Int, archived: Boolean): Completable
+    fun deleteAllTasksFromProject(projectId: Int): Completable
 }
