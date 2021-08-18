@@ -27,4 +27,8 @@ class TaskSessionRepositoryImpl
         return taskSessionDao.getAllByProjectId(projectId)
     }
 
+    override fun deleteAllTaskSessionsByProjectId(projectId: Int): Completable {
+        return taskSessionDao.deleteAllTaskSessionsByProjectId(projectId)
+    }
+
 }
