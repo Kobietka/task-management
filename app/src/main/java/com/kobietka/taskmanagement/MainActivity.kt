@@ -201,17 +201,15 @@ class MainActivity : AppCompatActivity() {
             horizontalArrangement = Arrangement.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Column {
-                    Text(
-                        modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
-                        text = taskName.value,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = time.value,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                Text(
+                    modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
+                    text = taskName.value,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = time.value,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }
