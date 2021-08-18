@@ -6,16 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 
-@Entity(
-    tableName = "taskSession",
-    foreignKeys = [
-        ForeignKey(
-            entity = TaskEntity::class,
-            parentColumns = arrayOf("id"),
-            childColumns = arrayOf("taskId")
-        )
-    ]
-)
+@Entity(tableName = "taskSession")
 data class TaskSessionEntity(
     @PrimaryKey(autoGenerate = true) val id: Int?,
     @ColumnInfo val taskId: Int,
