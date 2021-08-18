@@ -2,7 +2,9 @@ package com.kobietka.taskmanagement.di
 
 import com.kobietka.taskmanagement.domain.usecase.project.*
 import com.kobietka.taskmanagement.repository.inter.ProjectRepository
+import com.kobietka.taskmanagement.repository.inter.StatusEventRepository
 import com.kobietka.taskmanagement.repository.inter.TaskRepository
+import com.kobietka.taskmanagement.repository.inter.TaskSessionRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,8 +26,18 @@ class ProjectModule {
     }
 
     @Provides
-    fun provideDeleteProject(projectRepository: ProjectRepository): DeleteProject {
-        return DeleteProject(projectRepository = projectRepository)
+    fun provideDeleteProject(
+        projectRepository: ProjectRepository,
+        taskRepository: TaskRepository,
+        taskSessionRepository: TaskSessionRepository,
+        statusEventRepository: StatusEventRepository
+    ): DeleteProject {
+        return DeleteProject(
+            projectRepository = projectRepository,
+            taskRepository = taskRepository,
+            taskSessionRepository = taskSessionRepository,
+            statusEventRepository = statusEventRepository
+        )
     }
 
     @Provides
