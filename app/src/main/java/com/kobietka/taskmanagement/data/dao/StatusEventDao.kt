@@ -20,4 +20,7 @@ interface StatusEventDao {
     @Query("select * from statusEvent where projectId = :projectId")
     fun getAllByProject(projectId: Int): Maybe<List<StatusEventEntity>>
 
+    @Query("delete from statusEvent where projectId = :projectId")
+    fun deleteEventsByProjectId(projectId: Int): Completable
+
 }

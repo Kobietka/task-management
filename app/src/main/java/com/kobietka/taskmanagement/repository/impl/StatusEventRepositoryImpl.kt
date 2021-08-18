@@ -22,4 +22,8 @@ class StatusEventRepositoryImpl
     override fun getAllByProject(projectId: Int): Maybe<List<StatusEventEntity>> {
         return statusEventDao.getAllByProject(projectId)
     }
+
+    override fun deleteEventsByProjectId(projectId: Int): Completable {
+        return statusEventDao.deleteEventsByProjectId(projectId)
+    }
 }

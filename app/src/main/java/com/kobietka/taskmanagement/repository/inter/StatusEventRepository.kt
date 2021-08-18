@@ -8,4 +8,5 @@ interface StatusEventRepository {
     fun insert(statusEventEntity: StatusEventEntity): Completable
     fun getAll(): Maybe<List<StatusEventEntity>>
     fun getAllByProject(projectId: Int): Maybe<List<StatusEventEntity>>
+    fun deleteEventsByProjectId(projectId: Int): Completable
 }
