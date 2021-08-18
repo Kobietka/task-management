@@ -384,7 +384,7 @@ fun StatusChangeItem(
 
     if(task != null){
         Card(modifier = Modifier
-            .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+            .padding(start = 5.dp, end = 5.dp, bottom = 10.dp)
             .fillMaxWidth(), shape = RoundedCornerShape(10.dp)) {
             Column(modifier = Modifier.padding(20.dp)) {
                 Row(
@@ -508,7 +508,7 @@ fun TaskList(
         }
     } else {
         LazyColumn(modifier = Modifier
-            .padding(start = 20.dp, end = 20.dp, top = 5.dp)
+            .padding(start = 5.dp, end = 5.dp, top = 5.dp)
             .fillMaxSize(), state = lazyListState) {
             items(tasks.size){
                 Task(
@@ -550,14 +550,15 @@ fun TaskListByStatus(
         }
     } else {
         Column(
-            Modifier
+            modifier = Modifier
                 .verticalScroll(scrollState, true)
-                .padding(start = 20.dp, end = 20.dp, top = 5.dp)) {
+                .padding(start = 5.dp, end = 5.dp, top = 5.dp)
+        ) {
             statuses.value.forEach { status ->
                 val tasksWithStatus = tasks.filter { task -> task.statusId == status.id }
                 if(tasksWithStatus.isNotEmpty())
                     Text(
-                        modifier = Modifier.padding(top = 10.dp, bottom = 10.dp),
+                        modifier = Modifier.padding(top = 10.dp, bottom = 20.dp, start = 10.dp),
                         text = status.name,
                         color = Color.Black,
                         fontWeight = FontWeight.Medium,
@@ -692,7 +693,7 @@ fun TaskListWithOnlyOneStatus(
     } else {
         Column(modifier = Modifier.fillMaxSize()) {
             LazyColumn(modifier = Modifier
-                .padding(start = 20.dp, end = 20.dp, top = 5.dp)
+                .padding(start = 5.dp, end = 5.dp, top = 5.dp)
                 .fillMaxSize(), state = lazyListState) {
                 items(filteredTasks.size){
                     Task(
@@ -726,7 +727,13 @@ fun Task(
             interactionSource = remember { MutableInteractionSource() },
             indication = rememberRipple(),
             onClick = { navController.navigate(Route.taskDetailsRoute(taskEntity.id!!)) },
-            onLongClick = { if(!isMeasuringTimeBlocked) navController.navigate(Route.measureTimeRoute(taskEntity.id!!)) }
+            onLongClick = {
+                if (!isMeasuringTimeBlocked) navController.navigate(
+                    Route.measureTimeRoute(
+                        taskEntity.id!!
+                    )
+                )
+            }
         )) {
         Column(modifier = Modifier
             .padding(20.dp)

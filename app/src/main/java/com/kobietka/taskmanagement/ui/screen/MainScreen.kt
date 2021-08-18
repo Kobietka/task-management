@@ -161,7 +161,7 @@ fun MainScreen(
                             }
                         } else {
                             LazyColumn(modifier = Modifier
-                                .padding(start = 20.dp, end = 20.dp, top = 5.dp)
+                                .padding(start = 5.dp, end = 5.dp, top = 5.dp)
                                 .fillMaxSize(), state = lazyColumnState) {
                                 items(projects.value.size){
                                     Project(
