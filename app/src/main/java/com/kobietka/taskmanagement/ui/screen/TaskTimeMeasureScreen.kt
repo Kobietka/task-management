@@ -66,7 +66,7 @@ fun TaskTimeMeasureScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ){
-                    Column {
+                    Column(modifier = Modifier.fillMaxWidth(0.85f)) {
                         Text(
                             text = "Measure time of",
                             fontSize = 18.sp,
